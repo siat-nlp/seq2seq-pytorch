@@ -1,4 +1,4 @@
-import torch.nn as nn
+from torch import nn
 from src.module.encoder.encoder import Encoder
 
 class TransformerEncoder(Encoder):
