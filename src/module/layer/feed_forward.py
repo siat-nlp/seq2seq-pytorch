@@ -9,5 +9,8 @@ class FeedForward(nn.Module):
         self.projection2 = nn.Linear(feed_forward_size, hidden_size)
 
     def forward(self, x):
+        """
+        x: FloatTensor (batch_size, time_step, hidden_size)
+        """
         output = self.projection2(F.relu(self.projection1(x)))
         return output
