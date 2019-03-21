@@ -1,0 +1,43 @@
+data_process:
+  path:
+    raw:
+      src_train: data/example/raw/train_example.de
+      trg_train: data/example/raw/train_example.en
+      src_val: data/example/raw/val_example.de
+      trg_val: data/example/raw/val_example.en
+      src_test: data/example/raw/test_example.de
+      trg_test: data/example/raw/test_example.en
+    processed:
+      train: data/processed/train.npz
+      val: data/processed/val.npz
+      test: data/processed/test.npz
+      src_word2index: data/processed/src_word2index.pickle
+      src_index2word: data/processed/src_index2word.pickle
+      trg_word2index: data/processed/trg_word2index.pickle
+      trg_index2word: data/processed/trg_index2word.pickle
+  tokenizer: fair
+  vocab:
+    src:
+      max_size: 30000
+      min_freq: 1
+    trg:
+      max_size: 30000
+      min_freq: 1
+model:
+  src_embedding:
+    vocab_size: 18560
+    embed_size: 256
+  trg_embedding:
+    vocab_size: 10842
+    embed_size: 256
+  rnn_type: LSTM
+  hidden_size: 512
+  num_layers: 2
+  bidirectional: True
+  dropout: 0.1
+train:
+  gpu: 4
+  batch_size: 64
+  learning_rate: 0.001
+  num_epoches: 10
+  clip: 5.0
