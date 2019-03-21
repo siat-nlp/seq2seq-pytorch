@@ -1,16 +1,24 @@
 import torch
 import torch.nn as nn
+from torch.nn import init
 from src.module.attention.attention import Attention
 
 class ConcatAttention(Attention):
 
     def __init__(self, query_size, key_size, dropout=0.1):
         super(ConcatAttention, self).__init__(dropout)
-        self.projection = nn.Linear(query_size + key_size, 1)
+        self.query_weights = nn.Parameter(torch.Tensor(query_size, 1))
+        self.key_weights = nn.Parameter(torch.Tensor(key_size, 1))
+        init.xavier_uniform_(self.query_weights)
+        init.xavier_uniform_(self.key_weights)
 
     def _score(self, query, key):
-        time_step = key.size(1)
-        batch_size, query_size = query.size()
-        query = query.unsqueeze(1).expand(batch_size, time_step, query_size)  # (batch_size, time_step, query_size)
-        scores = self.projection(torch.cat([query, key], dim=2)).transpose(1, 2)
-        return scores
+        """
+        query: FloatTensor (batch_size, num_queries, query_size)
+        key: FloatTensor (batch_size, time_step, key_size)
+        """
+        batch_size, num_queries, time_step = query.size(0), query.size(1), key.size(1)
+        query = query.matmul(self.query_weights).expand(batch_size, num_queries, time_step)
+        key = key.matmul(self.key_weights).transpose(1, 2).expand(batch_size, num_queries, time_step)
+        score = query + key
+        return score

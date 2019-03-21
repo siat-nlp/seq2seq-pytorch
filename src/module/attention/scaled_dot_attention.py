@@ -7,5 +7,9 @@ class ScaledDotAttention(Attention):
         super(ScaledDotAttention, self).__init__(dropout)
 
     def _score(self, query, key):
-        assert query.size(1) == key.size(2)
-        return query.unsqueeze(1).matmul(key.transpose(1, 2)) / math.sqrt(query.size(1))
+        """
+        query: FloatTensor (batch_size, num_queries, query_size)
+        key: FloatTensor (batch_size, time_step, key_size)
+        """
+        assert query.size(2) == key.size(2)
+        return query.matmul(key.transpose(1, 2)) / math.sqrt(query.size(2))
