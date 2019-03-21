@@ -1,10 +1,9 @@
-import torch
 from torch import nn
 import torch.nn.functional as F
 from torch.nn import init
 import math
 from src.module.encoder.encoder import Encoder
-from src.module.utils.grad_multiply import GradMultiply
+
 
 class ConvEncoder(Encoder):
 

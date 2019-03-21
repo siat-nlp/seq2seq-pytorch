@@ -1,9 +1,9 @@
 import torch.nn as nn
 from src.module.encoder.recurrent_encoder import RecurrentEncoder
-from src.module.utils.bridge import Bridge
+from src.module.utils import Bridge
 from src.module.decoder.recurrent_decoder import RecurrentDecoder
 from src.model.recurrent_seq2seq import RecurrentSeq2Seq
-from src.module.utils.rnn_cell.multi_layer_lstm_cells import MultiLayerLSTMCells
+from src.module.utils import MultiLayerLSTMCells
 from src.module.utils.rnn_cell.multi_layer_gru_cells import MultiLayerGRUCells
 from src.module.attention.bilinear_attention import BilinearAttention
 

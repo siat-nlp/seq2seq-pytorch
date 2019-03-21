@@ -1,5 +1,5 @@
 import operator
-from src.module.utils.constants import PAD, UNK, SOS, EOS
+from src.module.utils import PAD, UNK, SOS, EOS
 
 class Vocab(object):
 
