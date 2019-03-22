@@ -36,10 +36,10 @@ class ConvDecoder(Decoder):
         embed_src = embed_src.masked_fill(mask.unsqueeze(-1)==0, 0)
         return (src, embed_src), mask
 
-class ConvEncoderLayer(nn.Module):
+class ConvDecoderLayer(nn.Module):
 
     def __init__(self, hidden_size, kernel_size, dropout, activatity='glu'):
-        super(ConvEncoderLayer, self).__init__()
+        super(ConvDecoderLayer, self).__init__()
         self.layer_norm1 = nn.LayerNorm(hidden_size)
         if activatity == 'glu':
             self.conv = ConvGLU(
