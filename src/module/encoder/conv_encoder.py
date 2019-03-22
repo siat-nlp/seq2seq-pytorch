@@ -5,6 +5,9 @@ import math
 from src.module.encoder.encoder import Encoder
 from src.module.utils.clone import clone
 from src.module.utils.constants import PAD_INDEX
+from src.module.layer.feed_forward import FeedForward
+from src.module.layer.conv_glu import ConvGLU
+from src.module.layer.conv_relu import ConvReLU
 
 class ConvEncoder(Encoder):
 
@@ -33,3 +36,22 @@ class ConvEncoder(Encoder):
         src = src.masked_fill(mask.unsqueeze(-1)==0, 0)
         embed_src = embed_src.masked_fill(mask.unsqueeze(-1)==0, 0)
         return src, embed_src, mask
+
+class ConvEncoderLayer(nn.Module):
+
+    def __init__(self, hidden_size, kernel_size, dropout, activatity='glu'):
+        super(ConvEncoderLayer, self).__init__()
+        self.layers = nn.ModuleList([
+            nn.LayerNorm(hidden_size),
+            ConvGLU(hidden_size, hidden_size, kernel_size) if activatity == 'glu'
+            else ConvReLU(hidden_size, hidden_size, kernel_size),
+            nn.Dropout(dropout),
+            nn.LayerNorm(hidden_size),
+            FeedForward(hidden_size, 2 * hidden_size),
+            nn.Dropout(dropout)
+        ])
+
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
