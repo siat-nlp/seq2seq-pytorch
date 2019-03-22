@@ -8,7 +8,7 @@ from src.module.utils.constants import PAD_INDEX
 
 class ConvEncoder(Encoder):
 
-    def __init__(self, embedding, positional_embedding, layer, num_layers):
+    def __init__(self, embedding, positional_embedding, layer, num_layers, dropout):
         super(ConvEncoder, self).__init__()
         self.embedding = embedding
         self.positional_embedding = positional_embedding
@@ -17,6 +17,7 @@ class ConvEncoder(Encoder):
         self.input_projection = nn.Linear(embed_size, hidden_size)
         self.layers = clone(layer, num_layers)
         self.output_projection = nn.Linear(hidden_size, embed_size)
+        self.dropout = dropout
 
     def forward(self, src):
         src_embedding = self.embedding(src) + self.positional_embedding(src)
