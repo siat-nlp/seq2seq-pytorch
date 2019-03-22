@@ -41,17 +41,30 @@ class ConvEncoderLayer(nn.Module):
 
     def __init__(self, hidden_size, kernel_size, dropout, activatity='glu'):
         super(ConvEncoderLayer, self).__init__()
-        self.layers = nn.ModuleList([
-            nn.LayerNorm(hidden_size),
-            ConvGLU(hidden_size, hidden_size, kernel_size) if activatity == 'glu'
-            else ConvReLU(hidden_size, hidden_size, kernel_size),
-            nn.Dropout(dropout),
-            nn.LayerNorm(hidden_size),
-            FeedForward(hidden_size, 2 * hidden_size),
-            nn.Dropout(dropout)
-        ])
+        self.layer_norm1 = nn.LayerNorm(hidden_size)
+        if activatity == 'glu':
+            self.conv = ConvGLU(
+                input_size=hidden_size,
+                output_size=hidden_size,
+                kernel_size=kernel_size,
+                encode=True
+            )
+        else:
+            self.conv = ConvReLU(
+                input_size=hidden_size,
+                output_size=hidden_size,
+                kernel_size=kernel_size,
+                encode=True
+            )
+        self.dropout1 = nn.Dropout(dropout)
+        self.layer_norm2 = nn.LayerNorm(hidden_size)
+        self.feed_forward = FeedForward(
+            hidden_size=hidden_size,
+            feed_forward_size=2 * hidden_size
+        )
+        self.dropout2 = nn.Dropout(dropout)
 
     def forward(self, x):
-        for layer in self.layers:
-            x = layer(x)
+        x = self.dropout1(self.conv(self.layer_norm1(x)))
+        x = self.dropout2(self.feed_forward(self.layer_norm2(x)))
         return x
