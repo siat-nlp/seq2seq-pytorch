@@ -35,7 +35,7 @@ class ConvEncoder(Encoder):
         embed_src = (src + src_embedding) * math.sqrt(0.5)
         src = src.masked_fill(mask.unsqueeze(-1)==0, 0)
         embed_src = embed_src.masked_fill(mask.unsqueeze(-1)==0, 0)
-        return src, embed_src, mask
+        return (src, embed_src), mask
 
 class ConvEncoderLayer(nn.Module):
 
