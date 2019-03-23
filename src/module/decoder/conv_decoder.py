@@ -21,20 +21,27 @@ class ConvDecoder(Decoder):
         self.output_projection = nn.Linear(hidden_size, embed_size)
         self.dropout = dropout
 
-    def forward(self, src):
-        src_embedding = self.embedding(src) + self.positional_embedding(src)
-        src_embedding = F.dropout(src_embedding, p=self.dropout, training=self.training)
-        mask = (src != PAD_INDEX)   # ByteTensor (time_step, batch_size)
-        src = src_embedding.transpose(0, 1) # (time_step, batch_size, embed_size)
-        src = self.input_projection(src)
+    def forward(self, src, trg):
+        return self.step(src, trg)
+
+    def greedy_decode(self, src, max_len):
+        pass
+
+    def beam_decode(self, src, max_len, beam_size):
+        pass
+
+    def step(self, src, trg_slice):
+        trg_slice_embedding = self.embedding(trg_slice) + self.positional_embedding(trg_slice)
+        trg_slice_embedding = F.dropout(trg_slice_embedding, p=self.dropout, training=self.training)
+        trg_slice_mask = (trg_slice != PAD_INDEX)
+        trg_slice = trg_slice_embedding.transpose(0, 1)
+        trg_slice = self.input_projection(trg_slice)
         for layer in self.layers:
-            src = layer(src)
-        src = self.output_projection(src)
-        src = src.transpose(0, 1)
-        embed_src = (src + src_embedding) * math.sqrt(0.5)
-        src = src.masked_fill(mask.unsqueeze(-1)==0, 0)
-        embed_src = embed_src.masked_fill(mask.unsqueeze(-1)==0, 0)
-        return (src, embed_src), mask
+            trg_slice = layer(src, (trg_slice, trg_slice_mask))
+        trg_slice = self.output_projection(trg_slice)
+        trg_slice = trg_slice.transpose(0, 1)
+        logits = trg_slice.matmul(self.embedding.weight.t())
+        return logits
 
 class ConvDecoderLayer(nn.Module):
 
