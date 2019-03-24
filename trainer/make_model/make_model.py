@@ -62,21 +62,3 @@ def make_embedding(config):
         num_embeddings=config['vocab_size'],
         embedding_dim=config['embed_size']
     )
-
-def make_rnn_cell(config):
-    if config['rnn_type'] == 'LSTM':
-        return MultiLayerLSTMCells(
-            input_size= 2 * config['trg_embedding']['embed_size'],
-            hidden_size=config['hidden_size'],
-            num_layers=config['num_layers'],
-            dropout=config['dropout']
-        )
-    elif config['rnn_type'] == 'GRU':
-        return MultiLayerGRUCells(
-            input_size= 2 * config['trg_embedding']['embed_size'],
-            hidden_size=config['hidden_size'],
-            num_layers=config['num_layers'],
-            dropout=config['dropout']
-        )
-    else:
-        raise ValueError('No supporting.')

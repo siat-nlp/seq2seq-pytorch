@@ -15,7 +15,7 @@ class RecurrentEncoder(Encoder):
     def forward(self, src):
         src_embedding = self.embedding(src)
         src_embedding = F.dropout(src_embedding, p=self.dropout, training=self.training)
-        
+
 
 class RecurrentEncoderLayer(nn.Module):
 
