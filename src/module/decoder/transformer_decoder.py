@@ -1,6 +1,9 @@
+import torch
 from torch import nn
+import torch.nn.functional as F
 from src.module.decoder.decoder import Decoder
 from src.module.utils.clone import clone
+from src.module.utils.constants import PAD_INDEX
 
 class TransformerDecoder(Decoder):
 
@@ -9,14 +12,38 @@ class TransformerDecoder(Decoder):
         self.embedding = embedding
         self.positional_embedding = positional_embedding
         embed_size = embedding.embedding_dim
+        vocab_size = embedding.num_embeddings
         hidden_size = layer.hidden_size
-        self.input_projection = nn.Linear(embed_size, hidden_size)
+        # self.input_projection = nn.Linear(embed_size, hidden_size)
         self.layers = clone(layer, num_layers)
-        self.output_projection = nn.Linear(hidden_size, embed_size)
+        # self.output_projection = nn.Linear(hidden_size, embed_size)
+        self.layer_norm = nn.LayerNorm(hidden_size)
         self.dropout = dropout
+        self.generator = nn.Linear(hidden_size, vocab_size)
 
     def forward(self, src, trg):
+        src, src_mask = src
+        subsequent_mask = self.get_subsequent_mask(trg.size(1))
+        trg_mask = (trg != PAD_INDEX)
+        return self.step(src, src_mask, trg, trg_mask, subsequent_mask)
+
+    def step(self, src, src_mask, trg, trg_mask, subsequent_mask):
+        trg = self.embedding(trg) + self.positional_embedding(trg)
+        trg = F.dropout(trg, p=self.dropout, training=self.training)
+        for layer in self.layers:
+            trg = layer(src, src_mask, trg, trg_mask, subsequent_mask)
+        trg = self.layer_norm(trg)
+        logit = self.generator(trg)
+        return logit
+
+    def greedy_decode(self, src, max_len):
         pass
+
+    def beam_decode(self, src, max_len, beam_size):
+        pass
+
+    def get_subsequent_mask(self, size):
+        return torch.tril(torch.ones(size, size).byte())
 
 class TransformerDecoderLayer(nn.Module):
 
@@ -32,9 +59,7 @@ class TransformerDecoderLayer(nn.Module):
         self.feed_forward = feed_forward
         self.dropout3 = nn.Dropout(dropout)
 
-    def forward(self, src, trg):
-        src, src_mask = src
-        trg, trg_mask, subsequent_mask = trg
+    def forward(self, src, src_mask, trg, trg_mask, subsequent_mask):
         trg = self.layer_norm1(trg)
         trg = trg + self.self_attention(trg, trg, trg, mask=trg_mask, subsequent_mask=subsequent_mask)
         trg = self.dropout1(trg)

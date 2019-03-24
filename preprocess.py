@@ -6,7 +6,7 @@ from data_process.vocab import Vocab
 from data_process.tokenizer import fair_tokenizer, nltk_tokenizer, spacy_en_tokenizer, spacy_de_tokenizer
 from data_process.utils import text_file2word_lists, word_lists2numpy
 
-config = yaml.load(open('configs/config.yml'))['data_process']
+config = yaml.load(open('configs/example_config.yml'))['data_process']
 
 if config['tokenizer'] == 'fair':
     src_tokenizer = fair_tokenizer
