@@ -19,19 +19,24 @@ class MultiHeadAttention(nn.Module):
         init.xavier_normal_(self.output_projection.weight)
         self.attention = attention
 
-    def forward(self, query, key, value, mask=None):
+    def forward(self, query, key, value, mask=None, subsequent_mask=None):
         """
         query: FloatTensor (batch_size, num_queries, hidden_size)
         key: FloatTensor (batch_size, time_step, hidden_size)
         value: FloatTensor (batch_size, time_step, hidden_size)
         mask: ByteTensor (batch_size, time_step)
+        subsequent_mask: ByteTensor (batch_size, num_queries, time_step)
         """
         num_heads, key_size, value_size = self.num_heads, self.key_size, self.value_size
         batch_size, num_queries, time_step = query.size(0), query.size(1), key.size(1)
         query = self.query_projection(query).view(batch_size, num_queries, num_heads, key_size)
         key = self.key_projection(key).view(batch_size, time_step, num_heads, key_size)
         value = self.value_projection(value).view(batch_size, time_step, num_heads, value_size)
-        mask = mask.unsqueeze(0).expand(num_heads, batch_size, time_step).view(-1, time_step)
+        if subsequent_mask is not None:
+            mask = mask.unsqueeze(1).expand(batch_size, num_queries, time_step) & subsequent_mask
+            mask = mask.unsqueeze(0).expand(num_heads, batch_size, num_queries, time_step).view(-1, num_queries, time_step)
+        else:
+            mask = mask.unsqueeze(0).expand(num_heads, batch_size, time_step).view(-1, time_step)
         query = query.permute(2, 0, 1, 3).contiguous().view(-1, num_queries, key_size)
         key = key.permute(2, 0, 1, 3).contiguous().view(-1, time_step, key_size)
         value = value.permute(2, 0, 1, 3).contiguous().view(-1, time_step, value_size)
