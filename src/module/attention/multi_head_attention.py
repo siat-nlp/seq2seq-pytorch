@@ -25,7 +25,7 @@ class MultiHeadAttention(nn.Module):
         key: FloatTensor (batch_size, time_step, hidden_size)
         value: FloatTensor (batch_size, time_step, hidden_size)
         mask: ByteTensor (batch_size, time_step)
-        subsequent_mask: ByteTensor (batch_size, num_queries, time_step)
+        subsequent_mask: ByteTensor (num_queries, time_step)
         """
         num_heads, key_size, value_size = self.num_heads, self.key_size, self.value_size
         batch_size, num_queries, time_step = query.size(0), query.size(1), key.size(1)
@@ -33,6 +33,7 @@ class MultiHeadAttention(nn.Module):
         key = self.key_projection(key).view(batch_size, time_step, num_heads, key_size)
         value = self.value_projection(value).view(batch_size, time_step, num_heads, value_size)
         if subsequent_mask is not None:
+            subsequent_mask = subsequent_mask.unsqueeze(0).expand(batch_size, num_queries, time_step)
             mask = mask.unsqueeze(1).expand(batch_size, num_queries, time_step) & subsequent_mask
             mask = mask.unsqueeze(0).expand(num_heads, batch_size, num_queries, time_step).view(-1, num_queries, time_step)
         else:

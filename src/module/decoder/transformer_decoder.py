@@ -3,7 +3,7 @@ from torch import nn
 import torch.nn.functional as F
 from src.module.decoder.decoder import Decoder
 from src.module.utils.clone import clone
-from src.module.utils.constants import PAD_INDEX
+from src.module.utils.constants import PAD_INDEX, SOS_INDEX
 
 class TransformerDecoder(Decoder):
 
@@ -37,13 +37,23 @@ class TransformerDecoder(Decoder):
         return logit
 
     def greedy_decode(self, src, max_len):
-        pass
+        src, src_mask = src
+        batch_size = src.size(0)
+        subsequent_mask = self.get_subsequent_mask(max_len)
+        trg_mask = torch.ones(batch_size, max_len).byte().cuda()
+        trg = torch.zeros(batch_size, max_len)
+        trg[:, 0] = SOS_INDEX
+        for i in range(max_len):
+            logit = self.step(src, src_mask, trg[:, i:i+1], trg_mask[:, i:i+1], subsequent_mask[i:i+1])
+            logit = logit.argmax(dim=2, keepdim=False)
+            if i < max_len - 1:
+                trg[:, i + 1:i + 2] = logit
 
     def beam_decode(self, src, max_len, beam_size):
         pass
 
     def get_subsequent_mask(self, size):
-        return torch.tril(torch.ones(size, size).byte())
+        return torch.tril(torch.ones(size, size).byte().cuda())
 
 class TransformerDecoderLayer(nn.Module):
 
