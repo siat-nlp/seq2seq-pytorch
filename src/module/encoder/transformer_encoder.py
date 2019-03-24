@@ -28,10 +28,10 @@ class TransformerEncoder(Encoder):
         src = self.layer_norm(src)
         return (src, src_mask)
 
-class EncoderLayer(nn.Module):
+class TransformerEncoderLayer(nn.Module):
 
     def __init__(self, hidden_size, attention, feed_forward, dropout):
-        super(EncoderLayer, self).__init__()
+        super(TransformerEncoderLayer, self).__init__()
         self.layer_norm1 = nn.LayerNorm(hidden_size)
         self.attention = attention
         self.dropout1 = nn.Dropout(dropout)
