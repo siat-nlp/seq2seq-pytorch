@@ -41,9 +41,9 @@ class TransformerEncoderLayer(nn.Module):
 
     def forward(self, src, src_mask):
         src = self.layer_norm1(src)
-        src = self.attention(src, src, src, src_mask)
+        src = src + self.attention(src, src, src, src_mask)
         src = self.dropout1(src)
         src = self.layer_norm2(src)
-        src = self.feed_forward(src)
+        src = src + self.feed_forward(src)
         src = self.layer_norm2(src)
         return src
