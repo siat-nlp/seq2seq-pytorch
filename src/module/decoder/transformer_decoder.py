@@ -14,6 +14,7 @@ class TransformerDecoder(Decoder):
         embed_size = embedding.embedding_dim
         vocab_size = embedding.num_embeddings
         hidden_size = layer.hidden_size
+        assert embed_size == hidden_size
         # self.input_projection = nn.Linear(embed_size, hidden_size)
         self.layers = clone(layer, num_layers)
         # self.output_projection = nn.Linear(hidden_size, embed_size)
