@@ -34,9 +34,9 @@ class MultiHeadAttention(nn.Module):
         value = self.value_projection(value).view(batch_size, time_step, num_heads, value_size)
         if mask is not None:
             if len(mask.size()) == 2:
-                mask = mask.unsqueeze(0).expand(num_heads, batch_size, time_step).view(-1, time_step)
+                mask = mask.unsqueeze(0).repeat(num_heads, 1, 1).view(-1, time_step)
             else:
-                mask = mask.unsqueeze(0).expand(num_heads, batch_size, num_queries, time_step).view(-1, num_queries, time_step)
+                mask = mask.unsqueeze(0).repeat(num_heads, 1, 1, 1).view(-1, num_queries, time_step)
         query = query.permute(2, 0, 1, 3).contiguous().view(-1, num_queries, key_size)
         key = key.permute(2, 0, 1, 3).contiguous().view(-1, time_step, key_size)
         value = value.permute(2, 0, 1, 3).contiguous().view(-1, time_step, value_size)
