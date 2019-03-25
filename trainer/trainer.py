@@ -1,12 +1,16 @@
 import torch.nn as nn
 import torch.optim as optim
+import pickle
 from trainer.make_model.make_model import make_model
 from trainer.make_data import make_train_data
 from trainer.masked_cross_entropy import masked_cross_entropy
+from trainer.eval import eval
 
 def train(config):
     model = make_model(config['model']).cuda()
     train_loader, val_loader = make_train_data(config)
+    with open(config['data_process']['processed']['trg_index2word'], 'rb') as handle:
+        trg_index2word = pickle.load(handle)
     criterion = nn.CrossEntropyLoss(reduction='none')
     config = config['train']
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'])
@@ -32,3 +36,4 @@ def train(config):
             optimizer.step()
         avg_loss = sum_loss / sum_examples
         print('[epoch %2d] [loss %.4f]' % (epoch, avg_loss))
+        eval(val_loader, model, trg_index2word)
