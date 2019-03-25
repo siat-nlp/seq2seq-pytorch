@@ -24,15 +24,14 @@ class TransformerDecoder(Decoder):
 
     def forward(self, src, trg):
         src, src_mask = src
-        subsequent_mask = self.get_subsequent_mask(trg.size(1))
-        trg_mask = (trg != PAD_INDEX)
-        return self.step(src, src_mask, trg, trg_mask, subsequent_mask)
+        trg_mask = self.get_mask(trg)
+        return self.step(src, src_mask, trg, trg_mask)
 
-    def step(self, src, src_mask, trg, trg_mask, subsequent_mask):
+    def step(self, src, src_mask, trg, trg_mask):
         trg = self.embedding(trg) + self.positional_embedding(trg)
         trg = F.dropout(trg, p=self.dropout, training=self.training)
         for layer in self.layers:
-            trg = layer(src, src_mask, trg, trg_mask, subsequent_mask)
+            trg = layer(src, src_mask, trg, trg_mask)
         trg = self.layer_norm(trg)
         logit = self.generator(trg)
         return logit
@@ -40,21 +39,27 @@ class TransformerDecoder(Decoder):
     def greedy_decode(self, src, max_len):
         src, src_mask = src
         batch_size = src.size(0)
-        subsequent_mask = self.get_subsequent_mask(max_len)
-        trg_mask = torch.ones(batch_size, max_len).byte().cuda()
-        trg = torch.zeros(batch_size, max_len)
-        trg[:, 0] = SOS_INDEX
+        trg = torch.zeros(batch_size, 1).fill_(SOS_INDEX)
         for i in range(max_len):
-            logit = self.step(src, src_mask, trg[:, i:i+1], trg_mask[:, i:i+1], subsequent_mask[i:i+1])
-            logit = logit.argmax(dim=2, keepdim=False)
-            if i < max_len - 1:
-                trg[:, i + 1:i + 2] = logit
+            trg_mask = self.get_mask(trg)
+            logit = self.step(src, src_mask, trg, trg_mask)[:, -1:]
+            trg = torch.cat([trg, logit.argmax(dim=2, keepdim=False)], dim=1)
+        trg = trg[:, 1:]
+        return trg
 
     def beam_decode(self, src, max_len, beam_size):
         pass
 
-    def get_subsequent_mask(self, size):
-        return torch.tril(torch.ones(size, size).byte().cuda())
+    def get_mask(self, trg):
+        """
+        trg: LongTensor (batch_size, time_step)
+        """
+        batch_size, time_step = trg.size()
+        trg_mask = (trg != PAD_INDEX).unsqueeze(1).expand(batch_size, time_step, time_step)
+        subsequent_mask = torch.tril(torch.ones(time_step, time_step).byte().cuda())
+        subsequent_mask = subsequent_mask.unsqueeze(0).expand(batch_size, time_step, time_step)
+        trg_mask = trg_mask & subsequent_mask
+        return trg_mask
 
 class TransformerDecoderLayer(nn.Module):
 
@@ -70,9 +75,9 @@ class TransformerDecoderLayer(nn.Module):
         self.feed_forward = feed_forward
         self.dropout3 = nn.Dropout(dropout)
 
-    def forward(self, src, src_mask, trg, trg_mask, subsequent_mask):
+    def forward(self, src, src_mask, trg, trg_mask):
         trg = self.layer_norm1(trg)
-        trg = trg + self.self_attention(trg, trg, trg, mask=trg_mask, subsequent_mask=subsequent_mask)
+        trg = trg + self.self_attention(trg, trg, trg, mask=trg_mask)
         trg = self.dropout1(trg)
         trg = self.layer_norm2(trg)
         trg = trg + self.src_attention(trg, src, src, mask=src_mask)
