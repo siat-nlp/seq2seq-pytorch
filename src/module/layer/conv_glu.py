@@ -10,6 +10,7 @@ class ConvGLU(nn.Module):
             out_channels=2 * output_size,
             kernel_size=kernel_size,
         )
+        self.kernel_size = kernel_size
         self.left_padding = (kernel_size - 1) // 2 if encode else 0
         self.right_padding = kernel_size // 2 if encode else 0
 

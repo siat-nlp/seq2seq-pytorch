@@ -38,15 +38,17 @@ model:
     bidirectional: True
     dropout: 0.1
   cnn:
-    src_embedding:
-      vocab_size: 18560
-      embed_size: 256
-    trg_embedding:
-      vocab_size: 10842
-      embed_size: 256
+    src_vocab_size: 18560
+    trg_vocab_size: 10842
+    embed_size: 256
+    num_positions: 500
+    kernel_size: 3
+    num_layers: 8
+    activate: glu
   transformer:
     src_vocab_size: 18560
     trg_vocab_size: 10842
+    num_positions: 500
     d_model: 512
     num_heads: 8
     num_layers: 6
@@ -55,5 +57,5 @@ train:
   gpu: 4
   batch_size: 64
   learning_rate: 0.001
-  num_epoches: 10
+  num_epoches: 30
   clip: 5.0

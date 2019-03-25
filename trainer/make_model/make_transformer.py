@@ -13,17 +13,12 @@ def make_transformer(config):
         num_embeddings=config['src_vocab_size'],
         embedding_dim=config['d_model']
     )
-    src_positional_embedding = PositionalEmbedding(
-        num_embeddings=config['src_vocab_size'],
-        embedding_dim=config['d_model'],
-        learnable=False
-    )
     trg_embedding = nn.Embedding(
         num_embeddings=config['trg_vocab_size'],
         embedding_dim=config['d_model']
     )
-    trg_positional_embedding = PositionalEmbedding(
-        num_embeddings=config['trg_vocab_size'],
+    positional_embedding = PositionalEmbedding(
+        num_embeddings=config['num_positions'],
         embedding_dim=config['d_model'],
         learnable=False
     )
@@ -37,7 +32,7 @@ def make_transformer(config):
     )
     feed_forward = FeedForward(
         hidden_size=config['d_model'],
-        feed_forward_size=2 * config['d_model']
+        feed_forward_size=4 * config['d_model']
     )
     encoder_layer = TransformerEncoderLayer(
         hidden_size=config['d_model'],
@@ -47,7 +42,7 @@ def make_transformer(config):
     )
     encoder = TransformerEncoder(
         embedding=src_embedding,
-        positional_embedding=src_positional_embedding,
+        positional_embedding=positional_embedding,
         layer=encoder_layer,
         num_layers=config['num_layers'],
         dropout=config['dropout']
@@ -61,7 +56,7 @@ def make_transformer(config):
     )
     decoder = TransformerDecoder(
         embedding=trg_embedding,
-        positional_embedding=trg_positional_embedding,
+        positional_embedding=positional_embedding,
         layer=decoder_layer,
         num_layers=config['num_layers'],
         dropout=config['dropout']

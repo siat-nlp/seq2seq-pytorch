@@ -10,6 +10,7 @@ class ConvReLU(nn.Module):
             out_channels=output_size,
             kernel_size=kernel_size,
         )
+        self.kernel_size = kernel_size
         self.left_padding = (kernel_size - 1) // 2 if encode else 0
         self.right_padding = kernel_size // 2 if encode else 0
 

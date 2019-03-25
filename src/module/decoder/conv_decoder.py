@@ -12,11 +12,14 @@ class ConvDecoder(Decoder):
         self.embedding = embedding
         self.positional_embedding = positional_embedding
         embed_size = embedding.embedding_dim
+        vocab_size = embedding.num_embeddings
         hidden_size = layer.hidden_size
         self.input_projection = nn.Linear(embed_size, hidden_size)
         self.layers = clone(layer, num_layers)
+        self.layer_norm = nn.LayerNorm(hidden_size)
         self.output_projection = nn.Linear(hidden_size, embed_size)
         self.dropout = dropout
+        self.generator = nn.Linear(embed_size, vocab_size)
 
     def forward(self, src, trg):
         return self.step(src, trg)
@@ -27,24 +30,25 @@ class ConvDecoder(Decoder):
     def beam_decode(self, src, max_len, beam_size):
         pass
 
-    def step(self, src, trg_slice):
-        trg_slice_embedding = self.embedding(trg_slice) + self.positional_embedding(trg_slice)
-        trg_slice_embedding = F.dropout(trg_slice_embedding, p=self.dropout, training=self.training)
-        trg_slice_mask = (trg_slice != PAD_INDEX)
-        trg_slice = trg_slice_embedding.transpose(0, 1)
-        trg_slice = self.input_projection(trg_slice)
+    def step(self, src, trg):
+        trg_embedding = self.embedding(trg) + self.positional_embedding(trg)
+        trg_embedding = F.dropout(trg_embedding, p=self.dropout, training=self.training)
+        trg_mask = (trg != PAD_INDEX).transpose(0, 1)
+        trg = trg_embedding.transpose(0, 1)
+        trg = trg.masked_fill(trg_mask.unsqueeze(-1)==0, 0)
+        trg = self.input_projection(trg)
         for layer in self.layers:
-            trg_slice = layer(src, (trg_slice, trg_slice_mask))
-        trg_slice = self.output_projection(trg_slice)
-        trg_slice = trg_slice.transpose(0, 1)
-        logits = trg_slice.matmul(self.embedding.weight.t())
-        return logits
+            trg = layer(src, (trg, trg_mask))
+        trg = self.layer_norm(trg)
+        trg = self.output_projection(trg)
+        trg = trg.transpose(0, 1)
+        logit = self.generator(trg)
+        return logit
 
 class ConvDecoderLayer(nn.Module):
 
-    def __init__(self, conv, attention, feed_forward, dropout):
+    def __init__(self, hidden_size, conv, attention, feed_forward, dropout):
         super(ConvDecoderLayer, self).__init__()
-        hidden_size = conv.hidden_size
         self.layer_norm1 = nn.LayerNorm(hidden_size)
         self.conv = conv
         self.dropout1 = nn.Dropout(dropout)
@@ -55,5 +59,20 @@ class ConvDecoderLayer(nn.Module):
         self.feed_forward = feed_forward
         self.dropout3 = nn.Dropout(dropout)
 
-    def forward(self, src, src_mask, trg, trg_mask):
-        pass
+    def forward(self, src, trg):
+        src, embed_src, src_mask = src
+        trg, trg_mask = trg
+        trg = self.layer_norm1(trg)
+        k = self.conv.kernel_size
+        trg = trg[:, k-1:] + self.conv(trg)
+        trg = self.dropout1(trg)
+        trg = trg.masked_fill(trg_mask.unsqueeze(-1)==0, 0)
+        trg = self.layer_norm2(trg)
+        trg = trg + self.attention(trg, src, embed_src, src_mask)
+        trg = self.dropout2(trg)
+        trg = trg.masked_fill(trg_mask.unsqueeze(-1)==0, 0)
+        trg = self.layer_norm3(trg)
+        trg = self.feed_forward(trg)
+        trg = self.dropout3(trg)
+        trg = trg.masked_fill(trg_mask.unsqueeze(-1)==0, 0)
+        return trg
