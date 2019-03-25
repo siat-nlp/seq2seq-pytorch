@@ -29,7 +29,7 @@ class ConvDecoder(Decoder):
     def greedy_decode(self, src, max_len):
         src, embed_src, src_mask = src
         batch_size = src.size(0)
-        trg = torch.zeros(batch_size, 1).fill_(SOS_INDEX)
+        trg = torch.zeros(batch_size, 1).fill_(SOS_INDEX).long().cuda()
         for i in range(max_len):
             logit = self.step(src, embed_src, src_mask, trg)[:, -1:]
             trg = torch.cat([trg, logit.argmax(dim=2, keepdim=False)], dim=1)

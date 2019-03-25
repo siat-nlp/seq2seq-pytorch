@@ -10,8 +10,8 @@ class ConvSeq2Seq(Seq2Seq):
     def forward(self, src, trg):
         return self.decoder(self.encoder(src), trg)
 
-    def greedy_decode(self, src):
-        pass
+    def greedy_decode(self, src, max_len):
+        return self.decoder.greedy_decode(self.encoder(src), max_len)
 
-    def beam_decode(self, src):
-        pass
+    def beam_decode(self, src, max_len, beam_size):
+        return self.decoder.beam_decode(self.encoder(src), max_len, beam_size)

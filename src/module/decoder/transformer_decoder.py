@@ -39,7 +39,7 @@ class TransformerDecoder(Decoder):
     def greedy_decode(self, src, max_len):
         src, src_mask = src
         batch_size = src.size(0)
-        trg = torch.zeros(batch_size, 1).fill_(SOS_INDEX)
+        trg = torch.zeros(batch_size, 1).fill_(SOS_INDEX).long().cuda()
         for i in range(max_len):
             trg_mask = self.get_mask(trg)
             logit = self.step(src, src_mask, trg, trg_mask)[:, -1:]

@@ -9,7 +9,7 @@ from trainer.eval import eval
 def train(config):
     model = make_model(config['model']).cuda()
     train_loader, val_loader = make_train_data(config)
-    with open(config['data_process']['processed']['trg_index2word'], 'rb') as handle:
+    with open(config['data_process']['path']['processed']['trg_index2word'], 'rb') as handle:
         trg_index2word = pickle.load(handle)
     criterion = nn.CrossEntropyLoss(reduction='none')
     config = config['train']
@@ -36,4 +36,5 @@ def train(config):
             optimizer.step()
         avg_loss = sum_loss / sum_examples
         print('[epoch %2d] [loss %.4f]' % (epoch, avg_loss))
-        eval(val_loader, model, trg_index2word)
+        max_len = config['max_len']
+        eval(val_loader, model, max_len, trg_index2word)
