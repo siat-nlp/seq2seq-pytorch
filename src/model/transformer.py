@@ -9,3 +9,9 @@ class Transformer(Seq2Seq):
 
     def forward(self, src, trg):
         return self.decoder(self.encoder(src), trg)
+
+    def greedy_decode(self, src):
+        return self.decoder.greedy_decode(self.encoder(src))
+
+    def beam_decode(self, src):
+        return self.decoder.beam_decode(self.encoder(src))
