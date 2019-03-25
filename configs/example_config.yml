@@ -24,6 +24,7 @@ data_process:
       max_size: 30000
       min_freq: 1
 model:
+  type: transformer
   rnn:
     src_embedding:
       vocab_size: 18560

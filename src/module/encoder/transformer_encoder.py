@@ -32,6 +32,7 @@ class TransformerEncoderLayer(nn.Module):
 
     def __init__(self, hidden_size, attention, feed_forward, dropout):
         super(TransformerEncoderLayer, self).__init__()
+        self.hidden_size = hidden_size
         self.layer_norm1 = nn.LayerNorm(hidden_size)
         self.attention = attention
         self.dropout1 = nn.Dropout(dropout)

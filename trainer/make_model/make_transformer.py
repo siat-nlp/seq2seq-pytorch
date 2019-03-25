@@ -1,5 +1,5 @@
 from torch import nn
-import copy.deepcopy as copy
+from copy import deepcopy
 from src.model.transformer import Transformer
 from src.module.encoder.transformer_encoder import TransformerEncoder, TransformerEncoderLayer
 from src.module.decoder.transformer_decoder import TransformerDecoder, TransformerDecoderLayer
@@ -32,8 +32,8 @@ def make_transformer(config):
         attention=scaled_dot_attention,
         num_heads=config['num_heads'],
         hidden_size=config['d_model'],
-        key_size=config['d_model'] / config['num_heads'],
-        value_size=config['d_model'] / config['num_heads']
+        key_size=config['d_model'] // config['num_heads'],
+        value_size=config['d_model'] // config['num_heads']
     )
     feed_forward = FeedForward(
         hidden_size=config['d_model'],
@@ -41,8 +41,8 @@ def make_transformer(config):
     )
     encoder_layer = TransformerEncoderLayer(
         hidden_size=config['d_model'],
-        attention=copy(multi_head_attention),
-        feed_forward=copy(feed_forward),
+        attention=deepcopy(multi_head_attention),
+        feed_forward=deepcopy(feed_forward),
         dropout=config['dropout']
     )
     encoder = TransformerEncoder(
@@ -54,9 +54,9 @@ def make_transformer(config):
     )
     decoder_layer = TransformerDecoderLayer(
         hidden_size=config['d_model'],
-        self_attention=copy(multi_head_attention),
-        src_attention=copy(multi_head_attention),
-        feed_forward=copy(feed_forward),
+        self_attention=deepcopy(multi_head_attention),
+        src_attention=deepcopy(multi_head_attention),
+        feed_forward=deepcopy(feed_forward),
         dropout=config['dropout']
     )
     decoder = TransformerDecoder(

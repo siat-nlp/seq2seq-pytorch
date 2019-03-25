@@ -1,12 +1,11 @@
 import torch.nn as nn
 import torch.optim as optim
-from trainer.make_model import make_model
+from trainer.make_model.make_model import make_model
 from trainer.make_data import make_train_data
 from trainer.masked_cross_entropy import masked_cross_entropy
 
 def train(config):
     model = make_model(config['model']).cuda()
-    print(model)
     train_loader, val_loader = make_train_data(config)
     criterion = nn.CrossEntropyLoss(reduction='none')
     config = config['train']

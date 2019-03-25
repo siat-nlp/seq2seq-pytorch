@@ -19,10 +19,11 @@ class PositionalEmbedding(nn.Module):
             init.normal_(self.embeddings, mean=0, std=0.1)
         else:
             self.embeddings = torch.zeros(num_embeddings, embedding_dim)
-            position = torch.arange(0, num_embeddings).unsqueeze(1)
-            div_term = torch.exp(torch.arange(0, embedding_dim, 2) * (- math.log(10000.0) / embedding_dim))
+            position = torch.arange(0, num_embeddings).unsqueeze(1).float()
+            div_term = torch.exp(torch.arange(0, embedding_dim, 2).float() * (- math.log(10000.0) / embedding_dim))
             self.embeddings[:, 0::2] = torch.sin(position * div_term)
             self.embeddings[:, 1::2] = torch.cos(position * div_term)
+            self.embeddings = self.embeddings.cuda()
 
     def forward(self, x, left_padding=0):
         """

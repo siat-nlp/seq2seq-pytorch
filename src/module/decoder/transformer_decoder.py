@@ -65,6 +65,7 @@ class TransformerDecoderLayer(nn.Module):
 
     def __init__(self, hidden_size, self_attention, src_attention, feed_forward, dropout):
         super(TransformerDecoderLayer, self).__init__()
+        self.hidden_size = hidden_size
         self.layer_norm1 = nn.LayerNorm(hidden_size)
         self.self_attention = self_attention
         self.dropout1 = nn.Dropout(dropout)
