@@ -68,6 +68,7 @@ def make_conv_seq2seq(config):
     dot_attention = DotAttention(dropout=0)
     conv_decoder_layer = ConvDecoderLayer(
         hidden_size=config['hidden_size'],
+        embed_size=config['embed_size'],
         conv=decoder_conv,
         attention=dot_attention,
         feed_forward=feed_forward,

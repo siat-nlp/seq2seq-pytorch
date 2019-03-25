@@ -11,7 +11,7 @@ class ConvGLU(nn.Module):
             kernel_size=kernel_size,
         )
         self.kernel_size = kernel_size
-        self.left_padding = (kernel_size - 1) // 2 if encode else 0
+        self.left_padding = (kernel_size - 1) // 2 if encode else kernel_size - 1
         self.right_padding = kernel_size // 2 if encode else 0
 
     def forward(self, x):
@@ -20,6 +20,6 @@ class ConvGLU(nn.Module):
         """
         x = x.transpose(1, 2)
         x = F.pad(x, [self.left_padding, self.right_padding, 0, 0, 0, 0])
-        x = F.glu(self.conv(x))
+        x = F.glu(self.conv(x), dim=1)
         x = x.transpose(1, 2)
         return x

@@ -22,7 +22,8 @@ class ConvDecoder(Decoder):
         self.generator = nn.Linear(embed_size, vocab_size)
 
     def forward(self, src, trg):
-        return self.step(src, trg)
+        src, embed_src, src_mask = src
+        return self.step(src, embed_src, src_mask, trg)
 
     def greedy_decode(self, src, max_len):
         pass
@@ -30,15 +31,16 @@ class ConvDecoder(Decoder):
     def beam_decode(self, src, max_len, beam_size):
         pass
 
-    def step(self, src, trg):
+    def step(self, src, embed_src, src_mask, trg):
         trg_embedding = self.embedding(trg) + self.positional_embedding(trg)
         trg_embedding = F.dropout(trg_embedding, p=self.dropout, training=self.training)
         trg_mask = (trg != PAD_INDEX).transpose(0, 1)
-        trg = trg_embedding.transpose(0, 1)
+        trg_embedding = trg_embedding.transpose(0, 1)
+        trg = trg_embedding
         trg = trg.masked_fill(trg_mask.unsqueeze(-1)==0, 0)
         trg = self.input_projection(trg)
         for layer in self.layers:
-            trg = layer(src, (trg, trg_mask))
+            trg = layer(src, embed_src, src_mask, trg, trg_embedding, trg_mask)
         trg = self.layer_norm(trg)
         trg = self.output_projection(trg)
         trg = trg.transpose(0, 1)
@@ -47,28 +49,30 @@ class ConvDecoder(Decoder):
 
 class ConvDecoderLayer(nn.Module):
 
-    def __init__(self, hidden_size, conv, attention, feed_forward, dropout):
+    def __init__(self, hidden_size, embed_size, conv, attention, feed_forward, dropout):
         super(ConvDecoderLayer, self).__init__()
+        self.hidden_size = hidden_size
         self.layer_norm1 = nn.LayerNorm(hidden_size)
         self.conv = conv
         self.dropout1 = nn.Dropout(dropout)
         self.layer_norm2 = nn.LayerNorm(hidden_size)
+        self.input_projection = nn.Linear(hidden_size, embed_size)
         self.attention = attention
+        self.output_projection = nn.Linear(embed_size, hidden_size)
         self.dropout2 = nn.Dropout(dropout)
         self.layer_norm3 = nn.LayerNorm(hidden_size)
         self.feed_forward = feed_forward
         self.dropout3 = nn.Dropout(dropout)
 
-    def forward(self, src, trg):
-        src, embed_src, src_mask = src
-        trg, trg_mask = trg
+    def forward(self, src, embed_src, src_mask, trg, trg_embedding, trg_mask):
         trg = self.layer_norm1(trg)
-        k = self.conv.kernel_size
-        trg = trg[:, k-1:] + self.conv(trg)
+        trg = trg + self.conv(trg)
         trg = self.dropout1(trg)
         trg = trg.masked_fill(trg_mask.unsqueeze(-1)==0, 0)
         trg = self.layer_norm2(trg)
-        trg = trg + self.attention(trg, src, embed_src, src_mask)
+        query = (self.input_projection(trg) + trg_embedding).transpose(0, 1) * math.sqrt(0.5)
+        context = self.output_projection(self.attention(query, src, embed_src, src_mask)).transpose(0, 1)
+        trg = (trg + context) * math.sqrt(0.5)
         trg = self.dropout2(trg)
         trg = trg.masked_fill(trg_mask.unsqueeze(-1)==0, 0)
         trg = self.layer_norm3(trg)

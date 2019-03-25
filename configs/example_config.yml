@@ -24,7 +24,7 @@ data_process:
       max_size: 30000
       min_freq: 1
 model:
-  type: transformer
+  type: cnn
   rnn:
     src_embedding:
       vocab_size: 18560
@@ -42,9 +42,11 @@ model:
     trg_vocab_size: 10842
     embed_size: 256
     num_positions: 500
+    hidden_size: 512
     kernel_size: 3
     num_layers: 8
     activate: glu
+    dropout: 0.1
   transformer:
     src_vocab_size: 18560
     trg_vocab_size: 10842

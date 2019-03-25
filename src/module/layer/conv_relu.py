@@ -11,7 +11,7 @@ class ConvReLU(nn.Module):
             kernel_size=kernel_size,
         )
         self.kernel_size = kernel_size
-        self.left_padding = (kernel_size - 1) // 2 if encode else 0
+        self.left_padding = (kernel_size - 1) // 2 if encode else kernel_size - 1
         self.right_padding = kernel_size // 2 if encode else 0
 
     def forward(self, x):

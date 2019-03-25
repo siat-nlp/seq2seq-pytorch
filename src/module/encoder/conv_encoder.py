@@ -40,6 +40,7 @@ class ConvEncoderLayer(nn.Module):
 
     def __init__(self, hidden_size, conv, feed_forward, dropout):
         super(ConvEncoderLayer, self).__init__()
+        self.hidden_size = hidden_size
         self.layer_norm1 = nn.LayerNorm(hidden_size)
         self.conv = conv
         self.dropout1 = nn.Dropout(dropout)
