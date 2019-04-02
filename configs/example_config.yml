@@ -44,7 +44,7 @@ model:
     num_positions: 500
     hidden_size: 512
     kernel_size: 3
-    num_layers: 8
+    num_layers: 12
     activate: glu
     dropout: 0.1
   transformer:
@@ -56,8 +56,10 @@ model:
     num_layers: 6
     dropout: 0.1
 train:
-  gpu: 4
+  gpu: 5
   batch_size: 64
   learning_rate: 0.001
   num_epoches: 30
   clip: 5.0
+  max_len: 50
+  label_smoothing: 0.1

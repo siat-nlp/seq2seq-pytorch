@@ -32,7 +32,7 @@ class RecurrentEncoder(Encoder):
             final_states.append(final_state)
         src, _ = pad_packed_sequence(packed_src, batch_first=True)
         src = self.layer_norm(src)
-        return src, final_states
+        return src, src_mask, final_states
 
 class RecurrentEncoderLayer(nn.Module):
 
@@ -58,4 +58,9 @@ class RecurrentEncoderLayer(nn.Module):
         src = self.layer_norm2(src)
         src = src + self.feed_forward(src)
         src = self.dropout2(src)
+        src = pack_padded_sequence(src, src_lens, batch_first=True)
+        if isinstance(final_state, tuple):
+            final_state = (self.feed_forward(final_state[0]), self.feed_forward(final_state[1]))
+        else:
+            final_state = self.feed_forward(final_state)
         return src, final_state
