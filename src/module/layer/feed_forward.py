@@ -3,10 +3,10 @@ import torch.nn.functional as F
 
 class FeedForward(nn.Module):
 
-    def __init__(self, hidden_size, feed_forward_size):
+    def __init__(self, input_size, feed_forward_size, output_size):
         super(FeedForward, self).__init__()
-        self.projection1 = nn.Linear(hidden_size, feed_forward_size)
-        self.projection2 = nn.Linear(feed_forward_size, hidden_size)
+        self.projection1 = nn.Linear(input_size, feed_forward_size)
+        self.projection2 = nn.Linear(feed_forward_size, output_size)
 
     def forward(self, x):
         """

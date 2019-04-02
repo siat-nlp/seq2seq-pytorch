@@ -49,8 +49,9 @@ def make_conv_seq2seq(config):
             encode=False
         )
     feed_forward = FeedForward(
-        hidden_size=config['hidden_size'],
-        feed_forward_size=4 * config['hidden_size']
+        input_size=config['hidden_size'],
+        feed_forward_size=4 * config['hidden_size'],
+        output_size=config['hidden_size']
     )
     conv_encoder_layer = ConvEncoderLayer(
         hidden_size=config['hidden_size'],

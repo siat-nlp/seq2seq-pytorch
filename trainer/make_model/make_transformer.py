@@ -31,8 +31,9 @@ def make_transformer(config):
         value_size=config['d_model'] // config['num_heads']
     )
     feed_forward = FeedForward(
-        hidden_size=config['d_model'],
-        feed_forward_size=4 * config['d_model']
+        input_size=config['d_model'],
+        feed_forward_size=4 * config['d_model'],
+        output_size=config['d_model']
     )
     encoder_layer = TransformerEncoderLayer(
         hidden_size=config['d_model'],
