@@ -17,7 +17,16 @@ class RecurrentDecoder(Decoder):
 
     def forward(self, src, trg):
         src, src_mask, initial_states = src
-
+        batch_size, max_len = trg.size()
+        states = initial_states
+        output = self.get_init_output(src, src_mask, initial_states)
+        logits = []
+        for i in range(max_len):
+            token = trg[:, i:i+1]
+            logit, states, output = self.step(src, src_mask, token, states, output)
+            logits.append(logit)
+        logits = torch.stack(logits, dim=1)
+        return logits
 
     def step(self, src, src_mask, token, prev_states, prev_output):
         token_embedding = self.embedding(token).squeeze(1)
