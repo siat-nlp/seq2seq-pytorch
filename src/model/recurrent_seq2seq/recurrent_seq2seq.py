@@ -1,6 +1,4 @@
-import torch
-from src.module.utils import constants
-from src.model.seq2seq import Seq2Seq
+from src.module.seq2seq import Seq2Seq
 
 class RecurrentSeq2Seq(Seq2Seq):
 

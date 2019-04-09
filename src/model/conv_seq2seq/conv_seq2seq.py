@@ -1,4 +1,4 @@
-from src.model.seq2seq import Seq2Seq
+from src.module.seq2seq import Seq2Seq
 
 class ConvSeq2Seq(Seq2Seq):
 

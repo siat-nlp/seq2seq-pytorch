@@ -1,12 +1,12 @@
 from torch import nn
 from copy import deepcopy
 from src.model.transformer import Transformer
-from src.module.encoder.transformer_encoder import TransformerEncoder, TransformerEncoderLayer
-from src.module.decoder.transformer_decoder import TransformerDecoder, TransformerDecoderLayer
+from src.model.transformer.transformer_encoder import TransformerEncoder, TransformerEncoderLayer
+from src.model.transformer.transformer_decoder import TransformerDecoder, TransformerDecoderLayer
 from src.module.layer.feed_forward import FeedForward
 from src.module.attention.scaled_dot_attention import ScaledDotAttention
 from src.module.attention.multi_head_attention import MultiHeadAttention
-from src.module.embedding.positional_embedding import PositionalEmbedding
+from src.module.positional_embedding import PositionalEmbedding
 
 def make_transformer(config):
     src_embedding = nn.Embedding(

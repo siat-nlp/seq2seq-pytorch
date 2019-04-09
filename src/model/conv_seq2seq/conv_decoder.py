@@ -8,7 +8,7 @@ from src.module.utils.clone import clone
 
 class ConvDecoder(Decoder):
 
-    def __init__(self, embedding, positional_embedding, layer, num_layers, dropout):
+    def __init__(self, embedding, positional_embedding, layer, num_layers, dropout, share_decoder_embedding=True):
         super(ConvDecoder, self).__init__()
         self.embedding = embedding
         self.positional_embedding = positional_embedding
@@ -21,7 +21,8 @@ class ConvDecoder(Decoder):
         self.output_projection = nn.Linear(hidden_size, embed_size)
         self.dropout = dropout
         self.generator = nn.Linear(embed_size, vocab_size)
-        self.generator.weight = embedding.weight
+        if share_decoder_embedding:
+            self.generator.weight = embedding.weight
 
     def forward(self, src, trg):
         src, embed_src, src_mask = src
