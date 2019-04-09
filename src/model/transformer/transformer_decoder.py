@@ -47,7 +47,7 @@ class TransformerDecoder(Decoder):
             trg_mask = self.get_mask(trg)
             step_logit = self.step(src, src_mask, trg, trg_mask)[:, -1:]
             trg = torch.cat([trg, step_logit.argmax(dim=2, keepdim=False)], dim=1)
-            logit.append(step_logit)
+            logit.append(step_logit.squeeze(1))
         logit = torch.stack(logit, dim=1)
         return logit
 

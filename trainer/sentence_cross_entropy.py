@@ -16,7 +16,7 @@ class SentenceCrossEntropy(nn.Module):
         :return: loss function value
         """
         vocab_size = hyp.size(2)
-        hyp = hyp.view(-1, vocab_size)
+        hyp = hyp.contiguous().view(-1, vocab_size)
         ref = ref.contiguous().view(-1)
         mask = (ref != PAD_INDEX)
         one_hot = torch.zeros_like(hyp).scatter(1, ref.unsqueeze(-1), 1).float().cuda()

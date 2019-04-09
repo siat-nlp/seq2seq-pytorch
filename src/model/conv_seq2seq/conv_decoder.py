@@ -36,7 +36,7 @@ class ConvDecoder(Decoder):
         for i in range(max_len):
             step_logit = self.step(src, embed_src, src_mask, trg)[:, -1:]
             trg = torch.cat([trg, step_logit.argmax(dim=2, keepdim=False)], dim=1)
-            logit.append(step_logit)
+            logit.append(step_logit.squeeze(1))
         logit = torch.stack(logit, dim=1)
         return logit
 
