@@ -21,6 +21,8 @@ class RecurrentEncoderLayer(nn.Module):
                 batch_first=True,
                 bidirectional=bidirectional
             )
+            self.hidden_projection = nn.Linear(2 * hidden_size if bidirectional else hidden_size, hidden_size)
+            self.cell_projection = nn.Linear(2 * hidden_size if bidirectional else hidden_size, hidden_size)
         elif rnn_type == 'GRU':
             self.rnn = nn.GRU(
                 input_size=input_size,
@@ -29,6 +31,7 @@ class RecurrentEncoderLayer(nn.Module):
                 batch_first=True,
                 bidirectional=bidirectional
             )
+            self.hidden_projection = nn.Linear(2 * hidden_size if bidirectional else hidden_size, hidden_size)
         else:
             raise ValueError('%s is not supported.' % rnn_type)
         self.feed_forward = FeedForward(
@@ -55,11 +58,11 @@ class RecurrentEncoderLayer(nn.Module):
         packed_src = pack_padded_sequence(src, src_lens, batch_first=True)
         if self.rnn_type == 'LSTM':
             final_state = (
-                torch.cat(final_state[0].split(split_size=1, dim=0), dim=2),
-                torch.cat(final_state[1].split(split_size=1, dim=0), dim=2)
+                self.hidden_projection(torch.cat(final_state[0].split(split_size=1, dim=0), dim=2)),
+                self.cell_projection(torch.cat(final_state[1].split(split_size=1, dim=0), dim=2))
             )
         else:  # GRU
-            final_state = torch.cat(final_state.split(split_size=1, dim=0), dim=2)
+            final_state = self.hidden_projection(torch.cat(final_state.split(split_size=1, dim=0), dim=2))
         return packed_src, final_state
 
 class ExtendedRecurrentEncoderLayer(nn.Module):

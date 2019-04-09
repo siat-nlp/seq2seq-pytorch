@@ -1,6 +1,6 @@
 from torch import nn
 from copy import deepcopy
-from src.model.transformer import Transformer
+from src.model.transformer.transformer import Transformer
 from src.model.transformer.transformer_encoder import TransformerEncoder, TransformerEncoderLayer
 from src.model.transformer.transformer_decoder import TransformerDecoder, TransformerDecoderLayer
 from src.module.layer.feed_forward import FeedForward
