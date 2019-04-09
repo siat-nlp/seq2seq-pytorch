@@ -61,11 +61,3 @@ class RecurrentDecoder(Decoder):
         src_mean = src.sum(dim=1, keepdim=False) / src_lens.float()
         init_output = self.output_projection(torch.cat([init_top_hidden, src_mean], dim=1))
         return init_output
-
-class RecurrentDecoderLayer(nn.Module):
-
-    def __init__(self):
-        super(RecurrentDecoderLayer, self).__init__()
-
-    def forward(self, *input):
-        pass

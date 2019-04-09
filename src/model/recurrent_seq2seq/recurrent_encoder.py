@@ -35,37 +35,3 @@ class RecurrentEncoder(Encoder):
         src, _ = pad_packed_sequence(packed_src, batch_first=True)
         src = self.layer_norm(src)
         return src, src_mask, final_states
-
-class RecurrentEncoderLayer(nn.Module):
-
-    def __init__(self, rnn, feed_forward, dropout=0.1):
-        super(RecurrentEncoderLayer, self).__init__()
-        hidden_size = rnn.hidden_size
-        self.layer_norm1 = nn.LayerNorm(hidden_size)
-        self.rnn = rnn
-        self.layer_norm2 = nn.LayerNorm(hidden_size)
-        self.feed_forward = feed_forward
-        self.dropout = dropout
-
-    def forward(self, src):
-        """
-        :param src: FloatTensor (batch_size, input_size)
-        :return:
-        """
-        src, src_lens = pad_packed_sequence(src, batch_first=True)
-        src = self.layer_norm1(src)
-        residual = src
-        src = pack_padded_sequence(src, src_lens, batch_first=True)
-        src, final_state = self.rnn(src)
-        src, _ = pad_packed_sequence(src, batch_first=True)
-        src = src + residual
-        src = F.dropout(src, p=self.dropout, training=self.training)
-        src = self.layer_norm2(src)
-        src = src + self.feed_forward(src)
-        src = F.dropout(src, p=self.dropout, training=self.training)
-        src = pack_padded_sequence(src, src_lens, batch_first=True)
-        if isinstance(final_state, tuple):  # LSTM
-            final_state = (self.feed_forward(final_state[0]), self.feed_forward(final_state[1]))
-        else:   # GRU
-            final_state = self.feed_forward(final_state)
-        return src, final_state
