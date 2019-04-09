@@ -7,7 +7,7 @@ from src.module.utils.clone import clone
 
 class RecurrentEncoder(Encoder):
 
-    def __init__(self, embedding, layer, num_layers, dropout):
+    def __init__(self, embedding, layer, num_layers=1, dropout=0.1):
         super(RecurrentEncoder, self).__init__()
         self.embedding = embedding
         self.dropout = dropout
@@ -17,6 +17,10 @@ class RecurrentEncoder(Encoder):
         self.dropout = dropout
 
     def forward(self, src):
+        """
+        :param src: LongTensor (batch_size, time_step)
+        :return:
+        """
         src_embedding = self.embedding(src)
         src_embedding = F.dropout(src_embedding, p=self.dropout, training=self.training)
         src_mask = (src != PAD_INDEX)
@@ -34,17 +38,20 @@ class RecurrentEncoder(Encoder):
 
 class RecurrentEncoderLayer(nn.Module):
 
-    def __init__(self, rnn, feed_forward, dropout):
+    def __init__(self, rnn, feed_forward, dropout=0.1):
         super(RecurrentEncoderLayer, self).__init__()
         hidden_size = rnn.hidden_size
         self.layer_norm1 = nn.LayerNorm(hidden_size)
         self.rnn = rnn
-        self.dropout1 = nn.Dropout(dropout)
         self.layer_norm2 = nn.LayerNorm(hidden_size)
         self.feed_forward = feed_forward
-        self.dropout2 = nn.Dropout(dropout)
+        self.dropout = dropout
 
     def forward(self, src):
+        """
+        :param src: FloatTensor (batch_size, input_size)
+        :return:
+        """
         src, src_lens = pad_packed_sequence(src, batch_first=True)
         src = self.layer_norm1(src)
         residual = src
@@ -52,13 +59,13 @@ class RecurrentEncoderLayer(nn.Module):
         src, final_state = self.rnn(src)
         src, _ = pad_packed_sequence(src, batch_first=True)
         src = src + residual
-        src = self.dropout1(src)
+        src = F.dropout(src, p=self.dropout, training=self.training)
         src = self.layer_norm2(src)
         src = src + self.feed_forward(src)
-        src = self.dropout2(src)
+        src = F.dropout(src, p=self.dropout, training=self.training)
         src = pack_padded_sequence(src, src_lens, batch_first=True)
-        if isinstance(final_state, tuple):
+        if isinstance(final_state, tuple):  # LSTM
             final_state = (self.feed_forward(final_state[0]), self.feed_forward(final_state[1]))
-        else:
+        else:   # GRU
             final_state = self.feed_forward(final_state)
         return src, final_state
