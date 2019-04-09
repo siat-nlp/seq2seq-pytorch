@@ -39,9 +39,9 @@ class RecurrentDecoderLayer(nn.Module):
             hidden = final_state[0]
         else:
             hidden = final_state
-        hidden = hidden + input
+        # hidden = hidden + input
         hidden = F.dropout(hidden, p=self.dropout, training=self.training)
         hidden = self.layer_norm2(hidden)
-        hidden = hidden + self.feed_forward(hidden)
+        hidden = self.feed_forward(hidden)
         hidden = F.dropout(hidden, p=self.dropout, training=self.training)
         return hidden, final_state

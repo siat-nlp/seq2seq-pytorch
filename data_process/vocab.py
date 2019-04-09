@@ -1,5 +1,5 @@
 import operator
-from src.module.utils import PAD, UNK, SOS, EOS
+from src.module.utils.constants import PAD, UNK, SOS, EOS
 
 class Vocab(object):
 
@@ -23,6 +23,8 @@ class Vocab(object):
         for word in self._predefined_list:
             word2index[word] = len(word2index)
         for word, freq in sorted_words:
+            if word in word2index:
+                continue
             if (max_size is not None and len(word2index) >= max_size) or freq < min_freq:
                 word2index[word] = word2index[UNK]
             else:

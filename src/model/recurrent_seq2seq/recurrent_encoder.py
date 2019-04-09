@@ -3,7 +3,7 @@ import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 from src.module.encoder import Encoder
 from src.module.utils.constants import PAD_INDEX
-from src.module.utils.clone import clone
+from src.module.utils.sentence_clip import sentence_clip
 from src.model.recurrent_seq2seq.recurrent_encoder_layer import RecurrentEncoderLayer
 
 class RecurrentEncoder(Encoder):
@@ -38,6 +38,7 @@ class RecurrentEncoder(Encoder):
         :param src: LongTensor (batch_size, time_step)
         :return:
         """
+        src = sentence_clip(src)
         src_embedding = self.embedding(src)
         src_embedding = F.dropout(src_embedding, p=self.dropout, training=self.training)
         src_mask = (src != PAD_INDEX)

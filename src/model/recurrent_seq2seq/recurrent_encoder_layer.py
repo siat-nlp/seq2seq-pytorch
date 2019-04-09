@@ -40,7 +40,7 @@ class RecurrentEncoderLayer(nn.Module):
             output_size=hidden_size
         )
         self.layer_norm1 = nn.LayerNorm(input_size)
-        self.layer_norm2 = nn.LayerNorm(hidden_size)
+        self.layer_norm2 = nn.LayerNorm(2 * hidden_size if bidirectional else hidden_size)
         self.dropout = dropout
 
     def forward(self, packed_src):
@@ -50,19 +50,20 @@ class RecurrentEncoderLayer(nn.Module):
         packed_src = pack_padded_sequence(src, src_lens, batch_first=True)
         packed_src, final_state = self.rnn(packed_src)
         src, _ = pad_packed_sequence(packed_src, batch_first=True)
-        src = src + residual
+        # raise ValueError(src.size(), residual.size())
+        # src = src + residual
         src = F.dropout(src, p=self.dropout, training=self.training)
         src = self.layer_norm2(src)
-        src = src + self.feed_forward(src)
+        src = self.feed_forward(src)
         src = F.dropout(src, p=self.dropout, training=self.training)
         packed_src = pack_padded_sequence(src, src_lens, batch_first=True)
         if self.rnn_type == 'LSTM':
             final_state = (
-                self.hidden_projection(torch.cat(final_state[0].split(split_size=1, dim=0), dim=2)),
-                self.cell_projection(torch.cat(final_state[1].split(split_size=1, dim=0), dim=2))
+                self.hidden_projection(torch.cat(final_state[0].split(split_size=1, dim=0), dim=2).squeeze(0)),
+                self.cell_projection(torch.cat(final_state[1].split(split_size=1, dim=0), dim=2).squeeze(0))
             )
         else:  # GRU
-            final_state = self.hidden_projection(torch.cat(final_state.split(split_size=1, dim=0), dim=2))
+            final_state = self.hidden_projection(torch.cat(final_state.split(split_size=1, dim=0), dim=2).squeeze(0))
         return packed_src, final_state
 
 class ExtendedRecurrentEncoderLayer(nn.Module):

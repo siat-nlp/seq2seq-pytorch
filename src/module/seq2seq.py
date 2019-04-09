@@ -9,7 +9,7 @@ class Seq2Seq(nn.Module):
         raise NotImplementedError('Seq2Seq forward method is not implemented.')
 
     def greedy_decode(self, src, max_len):
-        raise NotImplementedError('Seq2Seq forward method is not implemented.')
+        raise NotImplementedError('Seq2Seq greedy_decode method is not implemented.')
 
     def beam_decode(self, src, max_len, beam_size):
-        raise NotImplementedError('Seq2Seq forward method is not implemented.')
+        raise NotImplementedError('Seq2Seq beam_decode method is not implemented.')

@@ -1,6 +1,6 @@
 from torch import nn
 from copy import deepcopy
-from src.model.conv_seq2seq import ConvSeq2Seq
+from src.model.conv_seq2seq.conv_seq2seq import ConvSeq2Seq
 from src.module.positional_embedding import PositionalEmbedding
 from src.module.layer.conv_glu import ConvGLU
 from src.module.layer.conv_relu import ConvReLU

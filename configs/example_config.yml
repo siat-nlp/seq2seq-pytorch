@@ -26,17 +26,15 @@ data_process:
 model:
   type: cnn
   rnn:
-    src_embedding:
-      vocab_size: 18560
-      embed_size: 256
-    trg_embedding:
-      vocab_size: 10842
-      embed_size: 256
+    src_vocab_size: 18560
+    trg_vocab_size: 10842
+    embed_size: 512
     rnn_type: LSTM
     hidden_size: 512
     num_layers: 2
     bidirectional: True
     dropout: 0.1
+    share_decoder_embedding: True
   cnn:
     src_vocab_size: 18560
     trg_vocab_size: 10842
@@ -56,7 +54,7 @@ model:
     num_layers: 6
     dropout: 0.1
 train:
-  gpu: 0
+  gpu: 4
   batch_size: 64
   learning_rate: 0.001
   num_epoches: 300

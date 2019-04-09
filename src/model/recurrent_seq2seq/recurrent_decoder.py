@@ -3,6 +3,8 @@ from torch import nn
 from src.module.decoder import Decoder
 from src.model.recurrent_seq2seq.recurrent_decoder_layer import RecurrentDecoderLayer
 from src.module.utils.clone import clone
+from src.module.utils.constants import SOS_INDEX
+from src.module.attention.bilinear_attention import BilinearAttention
 
 class RecurrentDecoder(Decoder):
 
@@ -28,6 +30,7 @@ class RecurrentDecoder(Decoder):
             ) for _ in range(num_layers - 1)
         ]))
         self.layer_norm = nn.LayerNorm(hidden_size)
+        self.attention = BilinearAttention(hidden_size, hidden_size)
         self.output_projection = nn.Sequential(
             nn.Linear(2 * hidden_size, hidden_size),
             nn.Tanh(),
@@ -74,3 +77,18 @@ class RecurrentDecoder(Decoder):
         src_mean = src.sum(dim=1, keepdim=False) / src_lens.float()
         init_output = self.output_projection(torch.cat([init_top_hidden, src_mean], dim=1))
         return init_output
+
+    def greedy_decode(self, src, max_len):
+        src, src_mask, initial_states = src
+        states = initial_states
+        output = self.get_init_output(src, src_mask, initial_states)
+        batch_size = src.size(0)
+        trg = torch.zeros(batch_size, 1).fill_(SOS_INDEX).long().cuda()
+        for i in range(max_len):
+            token = trg[:, i:i + 1]
+            step_logit, states, output = self.step(src, src_mask, token, states, output)
+            trg = torch.cat([trg, step_logit.argmax(dim=1, keepdim=True)], dim=1)
+        return trg
+
+    def beam_decode(self, src, max_len, beam_size):
+        pass
