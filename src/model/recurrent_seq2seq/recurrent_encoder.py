@@ -1,9 +1,7 @@
-import torch
 from torch import nn
 import torch.nn.functional as F
-from torch.nn import init
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
-from src.module.encoder.encoder import Encoder
+from src.module.encoder import Encoder
 from src.module.utils.constants import PAD_INDEX
 from src.module.utils.clone import clone
 

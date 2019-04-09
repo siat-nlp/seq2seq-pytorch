@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
-from src.module.decoder.decoder import Decoder
+from src.module.decoder import Decoder
 from src.module.utils.clone import clone
 from src.module.utils.constants import PAD_INDEX, SOS_INDEX
 

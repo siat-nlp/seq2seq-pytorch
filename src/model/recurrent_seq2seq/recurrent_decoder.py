@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from src.module.decoder.decoder import Decoder
+from src.module.decoder import Decoder
 
 class RecurrentDecoder(Decoder):
 

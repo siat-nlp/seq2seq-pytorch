@@ -1,6 +1,6 @@
 from torch import nn
 import torch.nn.functional as F
-from src.module.encoder.encoder import Encoder
+from src.module.encoder import Encoder
 from src.module.utils.clone import clone
 from src.module.utils.constants import PAD_INDEX
 
