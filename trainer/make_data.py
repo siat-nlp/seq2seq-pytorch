@@ -12,7 +12,7 @@ def make_train_data(config):
     )
     val_loader = DataLoader(
         dataset=val_dataset,
-        batch_size=config['train']['batch_size'],
+        batch_size=32,
         shuffle=False,
         num_workers=2
     )
