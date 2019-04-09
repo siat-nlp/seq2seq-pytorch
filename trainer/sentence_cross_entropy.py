@@ -17,9 +17,9 @@ class SentenceCrossEntropy(nn.Module):
         """
         vocab_size = hyp.size(2)
         hyp = hyp.view(-1, vocab_size)
-        ref = ref.view(-1)
+        ref = ref.contiguous().view(-1)
         mask = (ref != PAD_INDEX)
-        one_hot = torch.zeros_like(hyp).scatter(1, ref, 1).float().cuda()
+        one_hot = torch.zeros_like(hyp).scatter(1, ref.unsqueeze(-1), 1).float().cuda()
         ref = one_hot * (1.0 - self.label_smoothing) + (1 - one_hot) * self.label_smoothing / (vocab_size - 1)
         log_prob = F.log_softmax(hyp, dim=1)
         loss = - (log_prob * ref).sum(dim=1)

@@ -1,8 +1,10 @@
 from torch import nn
 from copy import deepcopy
 from src.model.transformer.transformer import Transformer
-from src.model.transformer.transformer_encoder import TransformerEncoder, TransformerEncoderLayer
-from src.model.transformer.transformer_decoder import TransformerDecoder, TransformerDecoderLayer
+from src.model.transformer.transformer_encoder import TransformerEncoder
+from src.model.transformer.transformer_decoder import TransformerDecoder
+from src.model.transformer.transformer_encoder_layer import TransformerEncoderLayer
+from src.model.transformer.transformer_decoder_layer import TransformerDecoderLayer
 from src.module.layer.feed_forward import FeedForward
 from src.module.attention.scaled_dot_attention import ScaledDotAttention
 from src.module.attention.multi_head_attention import MultiHeadAttention

@@ -5,8 +5,10 @@ from src.module.positional_embedding import PositionalEmbedding
 from src.module.layer.conv_glu import ConvGLU
 from src.module.layer.conv_relu import ConvReLU
 from src.module.layer.feed_forward import FeedForward
-from src.model.conv_seq2seq.conv_encoder import ConvEncoder, ConvEncoderLayer
-from src.model.conv_seq2seq.conv_decoder import ConvDecoder, ConvDecoderLayer
+from src.model.conv_seq2seq.conv_encoder import ConvEncoder
+from src.model.conv_seq2seq.conv_decoder import ConvDecoder
+from src.model.conv_seq2seq.conv_encoder_layer import ConvEncoderLayer
+from src.model.conv_seq2seq.conv_decoder_layer import ConvDecoderLayer
 from src.module.attention.dot_attention import DotAttention
 
 def make_conv_seq2seq(config):

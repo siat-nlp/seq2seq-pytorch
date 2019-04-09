@@ -84,11 +84,14 @@ class RecurrentDecoder(Decoder):
         output = self.get_init_output(src, src_mask, initial_states)
         batch_size = src.size(0)
         trg = torch.zeros(batch_size, 1).fill_(SOS_INDEX).long().cuda()
+        logit = []
         for i in range(max_len):
             token = trg[:, i:i + 1]
             step_logit, states, output = self.step(src, src_mask, token, states, output)
             trg = torch.cat([trg, step_logit.argmax(dim=1, keepdim=True)], dim=1)
-        return trg
+            logit.append(step_logit)
+        logit = torch.stack(logit, dim=1)
+        return logit
 
     def beam_decode(self, src, max_len, beam_size):
         pass
