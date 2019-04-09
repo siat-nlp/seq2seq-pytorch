@@ -7,7 +7,7 @@ from src.module.utils.constants import PAD_INDEX, SOS_INDEX
 
 class TransformerDecoder(Decoder):
 
-    def __init__(self, embedding, positional_embedding, layer, num_layers, dropout):
+    def __init__(self, embedding, positional_embedding, layer, num_layers, dropout, share_decoder_embedding=True):
         super(TransformerDecoder, self).__init__()
         self.embedding = embedding
         self.positional_embedding = positional_embedding
@@ -21,6 +21,8 @@ class TransformerDecoder(Decoder):
         self.layer_norm = nn.LayerNorm(hidden_size)
         self.dropout = dropout
         self.generator = nn.Linear(hidden_size, vocab_size)
+        if share_decoder_embedding:
+            self.generator.weight = embedding.weight
 
     def forward(self, src, trg):
         src, src_mask = src
@@ -68,22 +70,20 @@ class TransformerDecoderLayer(nn.Module):
         self.hidden_size = hidden_size
         self.layer_norm1 = nn.LayerNorm(hidden_size)
         self.self_attention = self_attention
-        self.dropout1 = nn.Dropout(dropout)
         self.layer_norm2 = nn.LayerNorm(hidden_size)
         self.src_attention = src_attention
-        self.dropout2 = nn.Dropout(dropout)
         self.layer_norm3 = nn.LayerNorm(hidden_size)
         self.feed_forward = feed_forward
-        self.dropout3 = nn.Dropout(dropout)
+        self.dropout = dropout
 
     def forward(self, src, src_mask, trg, trg_mask):
         trg = self.layer_norm1(trg)
         trg = trg + self.self_attention(trg, trg, trg, mask=trg_mask)
-        trg = self.dropout1(trg)
+        trg = F.dropout(trg, p=self.dropout, training=self.training)
         trg = self.layer_norm2(trg)
         trg = trg + self.src_attention(trg, src, src, mask=src_mask)
-        trg = self.dropout2(trg)
+        trg = F.dropout(trg, p=self.dropout, training=self.training)
         trg = self.layer_norm3(trg)
         trg = trg + self.feed_forward(trg)
-        trg = self.dropout3(trg)
+        trg = F.dropout(trg, p=self.dropout, training=self.training)
         return trg
