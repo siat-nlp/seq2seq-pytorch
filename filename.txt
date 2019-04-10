@@ -1,1 +1,1 @@
-nmt-vi2en_config.yml
+example_config.yml

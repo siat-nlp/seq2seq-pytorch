@@ -20,7 +20,6 @@ class ConvEncoder(Encoder):
         self.dropout = dropout
 
     def forward(self, src):
-        print(src.max(), src.min(), self.dropout)
         src_embedding = self.embedding(src) + self.positional_embedding(src)
         src_embedding = F.dropout(src_embedding, p=self.dropout, training=self.training)
         mask = (src != PAD_INDEX)   # ByteTensor (time_step, batch_size)
