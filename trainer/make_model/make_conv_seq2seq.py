@@ -1,3 +1,4 @@
+import yaml
 from torch import nn
 from copy import deepcopy
 from src.model.conv_seq2seq.conv_seq2seq import ConvSeq2Seq
@@ -10,16 +11,28 @@ from src.model.conv_seq2seq.conv_decoder import ConvDecoder
 from src.model.conv_seq2seq.conv_encoder_layer import ConvEncoderLayer
 from src.model.conv_seq2seq.conv_decoder_layer import ConvDecoderLayer
 from src.module.attention.dot_attention import DotAttention
+from data_process.utils import parse_path
 
 def make_conv_seq2seq(config):
-    src_embedding = nn.Embedding(
-        num_embeddings=config['src_vocab_size'],
-        embedding_dim=config['embed_size']
-    )
-    trg_embedding = nn.Embedding(
-        num_embeddings=config['trg_vocab_size'],
-        embedding_dim=config['embed_size']
-    )
+    path = parse_path(config['data_process']['base_path'])
+    data_log = yaml.load(open(path['log']['data_log']))
+    share_src_trg_vocab = config['model']['share_src_trg_vocab']
+    config = config['model'][config['model']['type']]
+    if share_src_trg_vocab:
+        src_embedding = nn.Embedding(
+            num_embeddings=data_log['vocab_size'],
+            embedding_dim=config['embed_size']
+        )
+        trg_embedding = src_embedding
+    else:
+        src_embedding = nn.Embedding(
+            num_embeddings=data_log['src_vocab_size'],
+            embedding_dim=config['embed_size']
+        )
+        trg_embedding = nn.Embedding(
+            num_embeddings=data_log['trg_vocab_size'],
+            embedding_dim=config['embed_size']
+        )
     positional_embedding = PositionalEmbedding(
         num_embeddings=config['num_positions'],
         embedding_dim=config['embed_size']

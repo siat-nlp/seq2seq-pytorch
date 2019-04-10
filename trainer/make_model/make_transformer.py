@@ -9,16 +9,29 @@ from src.module.layer.feed_forward import FeedForward
 from src.module.attention.scaled_dot_attention import ScaledDotAttention
 from src.module.attention.multi_head_attention import MultiHeadAttention
 from src.module.positional_embedding import PositionalEmbedding
+import yaml
+from data_process.utils import parse_path
 
 def make_transformer(config):
-    src_embedding = nn.Embedding(
-        num_embeddings=config['src_vocab_size'],
-        embedding_dim=config['d_model']
-    )
-    trg_embedding = nn.Embedding(
-        num_embeddings=config['trg_vocab_size'],
-        embedding_dim=config['d_model']
-    )
+    path = parse_path(config['data_process']['base_path'])
+    data_log = yaml.load(open(path['log']['data_log']))
+    share_src_trg_vocab = config['model']['share_src_trg_vocab']
+    config = config['model'][config['model']['type']]
+    if share_src_trg_vocab:
+        src_embedding = nn.Embedding(
+            num_embeddings=data_log['vocab_size'],
+            embedding_dim=config['embed_size']
+        )
+        trg_embedding = src_embedding
+    else:
+        src_embedding = nn.Embedding(
+            num_embeddings=data_log['src_vocab_size'],
+            embedding_dim=config['d_model']
+        )
+        trg_embedding = nn.Embedding(
+            num_embeddings=data_log['trg_vocab_size'],
+            embedding_dim=config['d_model']
+        )
     positional_embedding = PositionalEmbedding(
         num_embeddings=config['num_positions'],
         embedding_dim=config['d_model'],

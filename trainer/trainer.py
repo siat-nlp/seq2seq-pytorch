@@ -10,7 +10,7 @@ from data_process.utils import parse_path
 
 def train(config):
     path = parse_path(config['data_process']['base_path'])
-    model = make_model(config['model']).cuda()
+    model = make_model(config).cuda()
     train_loader, val_loader = make_train_data(config)
     if config['model']['share_src_trg_vocab']:
         with open(path['processed']['index2word'], 'rb') as handle:
@@ -19,7 +19,7 @@ def train(config):
         with open(path['processed']['trg_index2word'], 'rb') as handle:
             trg_index2word = pickle.load(handle)
     criterion = SentenceCrossEntropy()
-    config = config['model']
+    config = config['model'][config['model']['type']]
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'])
     for epoch in range(1, config['num_epoches'] + 1):
         sum_loss = 0

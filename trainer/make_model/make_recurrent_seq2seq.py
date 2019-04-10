@@ -2,16 +2,29 @@ from torch import nn
 from src.model.recurrent_seq2seq.recurrent_seq2seq import RecurrentSeq2Seq
 from src.model.recurrent_seq2seq.recurrent_encoder import RecurrentEncoder
 from src.model.recurrent_seq2seq.recurrent_decoder import RecurrentDecoder
+from data_process.utils import parse_path
+import yaml
 
 def make_recurrent_seq2seq(config):
-    src_embedding = nn.Embedding(
-        num_embeddings=config['src_vocab_size'],
-        embedding_dim=config['embed_size']
-    )
-    trg_embedding = nn.Embedding(
-        num_embeddings=config['trg_vocab_size'],
-        embedding_dim=config['embed_size']
-    )
+    path = parse_path(config['data_process']['base_path'])
+    data_log = yaml.load(open(path['log']['data_log']))
+    share_src_trg_vocab = config['model']['share_src_trg_vocab']
+    config = config['model'][config['model']['type']]
+    if share_src_trg_vocab:
+        src_embedding = nn.Embedding(
+            num_embeddings=data_log['vocab_size'],
+            embedding_dim=config['embed_size']
+        )
+        trg_embedding = src_embedding
+    else:
+        src_embedding = nn.Embedding(
+            num_embeddings=data_log['src_vocab_size'],
+            embedding_dim=config['embed_size']
+        )
+        trg_embedding = nn.Embedding(
+            num_embeddings=data_log['trg_vocab_size'],
+            embedding_dim=config['embed_size']
+        )
     encoder = RecurrentEncoder(
         rnn_type=config['rnn_type'],
         embedding=src_embedding,

@@ -1,12 +1,14 @@
 from torch.utils.data import DataLoader
 from data_process.dataset import Seq2SeqDataset
+from data_process.utils import parse_path
 
 def make_train_data(config):
-    train_dataset = Seq2SeqDataset(config['data_process']['path']['processed']['train'])
-    val_dataset = Seq2SeqDataset(config['data_process']['path']['processed']['val'])
+    path = parse_path(config['data_process']['base_path'])
+    train_dataset = Seq2SeqDataset(path['processed']['train'])
+    val_dataset = Seq2SeqDataset(path['processed']['val'])
     train_loader = DataLoader(
         dataset=train_dataset,
-        batch_size=config['train']['batch_size'],
+        batch_size=config['model'][config['model']['type']]['batch_size'],
         shuffle=True,
         num_workers=2
     )
@@ -19,10 +21,11 @@ def make_train_data(config):
     return train_loader, val_loader
 
 def make_test_data(config):
-    test_dataset = Seq2SeqDataset(config['data_process']['path']['processed']['test'])
+    path = parse_path(config['data_process']['base_path'])
+    test_dataset = Seq2SeqDataset(path['processed']['test'])
     test_loader = DataLoader(
         dataset=test_dataset,
-        batch_size=config['train']['batch_size'],
+        batch_size=32,
         shuffle=False,
         num_workers=2
     )
