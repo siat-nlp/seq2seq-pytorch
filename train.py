@@ -2,6 +2,7 @@ import yaml
 import os
 from trainer.trainer import train
 
-config = yaml.load(open('configs/example_config.yml'))
+filename = open('filename.txt', 'r', encoding='utf-8').readline().strip()
+config = yaml.load(open(os.path.join('configs', filename)))
 os.environ["CUDA_VISIBLE_DEVICES"] = str(config['train']['gpu'])
 train(config)

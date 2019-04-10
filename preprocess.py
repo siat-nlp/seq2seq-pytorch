@@ -6,7 +6,8 @@ from data_process.vocab import Vocab
 from data_process.tokenizer import fair_tokenizer, nltk_tokenizer, spacy_en_tokenizer, spacy_de_tokenizer
 from data_process.utils import text_file2word_lists, word_lists2numpy
 
-config = yaml.load(open('configs/nmt-vi2en_config.yml'))['data_process']
+filename = open('filename.txt', 'r', encoding='utf-8').readline().strip()
+config = yaml.load(open(os.path.join('configs', filename)))['data_process']
 
 if config['tokenizer'] == 'fair':
     src_tokenizer = fair_tokenizer
@@ -50,6 +51,9 @@ trg_word2index, trg_index2word = trg_vocab.get_vocab(
     max_size=config['vocab']['trg']['max_size'],
     min_freq=config['vocab']['trg']['min_freq']
 )
+
+print(max(src_index2word.keys()))
+print(max(trg_index2word.keys()))
 
 print('src vocab size', len(src_index2word))
 print('trg vocab size', len(trg_index2word))
