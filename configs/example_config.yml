@@ -1,21 +1,6 @@
+share_src_trg_vocab: False
 data_process:
-  path:
-    raw:
-      src_train: data/example/raw/train_example.de
-      trg_train: data/example/raw/train_example.en
-      src_val: data/example/raw/val_example.de
-      trg_val: data/example/raw/val_example.en
-      src_test: data/example/raw/test_example.de
-      trg_test: data/example/raw/test_example.en
-    processed:
-      train: data/example/processed/train.npz
-      val: data/example/processed/val.npz
-      test: data/example/processed/test.npz
-      src_word2index: data/example/processed/src_word2index.pickle
-      src_index2word: data/example/processed/src_index2word.pickle
-      trg_word2index: data/example/processed/trg_word2index.pickle
-      trg_index2word: data/example/processed/trg_index2word.pickle
-  tokenizer: fair
+  base_path: data/example
   vocab:
     src:
       max_size: 30000
@@ -26,8 +11,6 @@ data_process:
 model:
   type: cnn
   rnn:
-    src_vocab_size: 18560
-    trg_vocab_size: 10842
     embed_size: 512
     rnn_type: LSTM
     hidden_size: 512
@@ -35,9 +18,13 @@ model:
     bidirectional: True
     dropout: 0.1
     share_decoder_embedding: True
+    gpu: 3
+    batch_size: 64
+    learning_rate: 0.001
+    num_epoches: 300
+    clip: 5.0
+    label_smoothing: 0.1
   cnn:
-    src_vocab_size: 18560
-    trg_vocab_size: 10842
     embed_size: 256
     num_positions: 500
     hidden_size: 512
@@ -45,19 +32,24 @@ model:
     num_layers: 8
     activate: glu
     dropout: 0.1
+    share_decoder_embedding: True
+    gpu: 3
+    batch_size: 64
+    learning_rate: 0.001
+    num_epoches: 300
+    clip: 5.0
+    max_len: 64
+    label_smoothing: 0.1
   transformer:
-    src_vocab_size: 18560
-    trg_vocab_size: 10842
     num_positions: 500
     d_model: 512
     num_heads: 8
     num_layers: 6
     dropout: 0.1
-train:
-  gpu: 3
-  batch_size: 64
-  learning_rate: 0.001
-  num_epoches: 300
-  clip: 5.0
-  max_len: 64
-  label_smoothing: 0.1
+    share_decoder_embedding: True
+    gpu: 3
+    batch_size: 64
+    learning_rate: 0.001
+    num_epoches: 300
+    clip: 5.0
+    label_smoothing: 0.1
