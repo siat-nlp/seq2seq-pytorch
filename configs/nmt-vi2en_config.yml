@@ -15,7 +15,8 @@ data_process:
       src_index2word: data/nmt-vi2en/processed/src_index2word.pickle
       trg_word2index: data/nmt-vi2en/processed/trg_word2index.pickle
       trg_index2word: data/nmt-vi2en/processed/trg_index2word.pickle
-  tokenizer: nltk
+      log_path: data/nmt-vi2en/processed/log.yml
+  tokenizer: fair
   vocab:
     src:
       max_size: 30000
@@ -24,10 +25,10 @@ data_process:
       max_size: 30000
       min_freq: 3
 model:
-  type: transformer
+  type: cnn
   rnn:
-    src_vocab_size: 10519
-    trg_vocab_size: 24413
+    src_vocab_size: 10666
+    trg_vocab_size: 24420
     embed_size: 512
     rnn_type: LSTM
     hidden_size: 512
@@ -36,8 +37,8 @@ model:
     dropout: 0.1
     share_decoder_embedding: True
   cnn:
-    src_vocab_size: 10519
-    trg_vocab_size: 24413
+    src_vocab_size: 10666
+    trg_vocab_size: 24420
     embed_size: 256
     num_positions: 500
     hidden_size: 512
@@ -46,8 +47,8 @@ model:
     activate: glu
     dropout: 0.1
   transformer:
-    src_vocab_size: 10519
-    trg_vocab_size: 24413
+    src_vocab_size: 10666
+    trg_vocab_size: 24420
     num_positions: 500
     d_model: 512
     num_heads: 8
