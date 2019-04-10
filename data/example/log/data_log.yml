@@ -1,0 +1,10 @@
+src_oov_size: 0
+src_vocab_size: 18560
+test_src_max_len: 37
+test_trg_max_len: 35
+train_src_max_len: 47
+train_trg_max_len: 43
+trg_oov_size: 0
+trg_vocab_size: 10842
+val_src_max_len: 39
+val_trg_max_len: 34

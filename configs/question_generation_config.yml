@@ -1,15 +1,11 @@
-share_src_trg_vocab: False
+share_src_trg_vocab: True
 data_process:
-  base_path: data/example
+  base_path: data/question_generation
   src_max_len: 100
   trg_max_len: 100
   vocab:
-    src:
-      max_size: 30000
-      min_freq: 1
-    trg:
-      max_size: 30000
-      min_freq: 1
+    max_size: 30000
+    min_freq: 1
 model:
   type: cnn
   rnn:

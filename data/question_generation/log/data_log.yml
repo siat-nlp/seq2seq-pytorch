@@ -1,0 +1,8 @@
+oov_size: 45567
+test_src_max_len: 139
+test_trg_max_len: 38
+train_src_max_len: 433
+train_trg_max_len: 61
+val_src_max_len: 265
+val_trg_max_len: 36
+vocab_size: 30000

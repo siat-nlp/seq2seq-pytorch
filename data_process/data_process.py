@@ -31,8 +31,8 @@ def data_process(config):
         src_test = word_lists2numpy(src_test_word_lists, word2index)
         trg_test = word_lists2numpy(trg_test_word_lists, word2index)
 
-        if not os.path.exists(os.path.dirname(path['processed']['src_train'])):
-            os.makedirs(os.path.dirname(path['processed']['src_train']))
+        if not os.path.exists(os.path.dirname(path['processed']['train'])):
+            os.makedirs(os.path.dirname(path['processed']['train']))
 
         np.savez(path['processed']['train'], src=src_train, trg=trg_train)
         np.savez(path['processed']['val'], src=src_val, trg=trg_val)
@@ -66,12 +66,12 @@ def data_process(config):
             trg_vocab.add_list(word_list)
 
         src_word2index, src_index2word = src_vocab.get_vocab(
-            max_size=config['data_process']['vocab']['max_size'],
-            min_freq=config['data_process']['vocab']['min_freq']
+            max_size=config['data_process']['vocab']['src']['max_size'],
+            min_freq=config['data_process']['vocab']['src']['min_freq']
         )
         trg_word2index, trg_index2word = trg_vocab.get_vocab(
-            max_size=config['data_process']['vocab']['max_size'],
-            min_freq=config['data_process']['vocab']['min_freq']
+            max_size=config['data_process']['vocab']['trg']['max_size'],
+            min_freq=config['data_process']['vocab']['trg']['min_freq']
         )
 
         src_train = word_lists2numpy(src_train_word_lists, src_word2index)
@@ -81,8 +81,8 @@ def data_process(config):
         src_test = word_lists2numpy(src_test_word_lists, src_word2index)
         trg_test = word_lists2numpy(trg_test_word_lists, trg_word2index)
 
-        if not os.path.exists(os.path.dirname(path['processed']['src_train'])):
-            os.makedirs(os.path.dirname(path['processed']['src_train']))
+        if not os.path.exists(os.path.dirname(path['processed']['train'])):
+            os.makedirs(os.path.dirname(path['processed']['train']))
 
         np.savez(path['processed']['train'], src=src_train, trg=trg_train)
         np.savez(path['processed']['val'], src=src_val, trg=trg_val)

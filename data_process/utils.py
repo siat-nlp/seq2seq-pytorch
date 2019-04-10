@@ -10,6 +10,9 @@ def get_word_lists(path):
         word_lists.append([SOS] + fair_tokenizer(text.strip()) + [EOS])
     return word_lists
 
+def analyze(word_lists):
+    pass
+
 def word_lists2numpy(word_lists, word2index):
     num = len(word_lists)
     max_len = 0
@@ -31,12 +34,15 @@ def parse_path(base_path):
             'trg_test': os.path.join(base_path, 'raw/trg_test.txt')
         },
         'processed': {
-            'src_train': os.path.join(base_path, 'processed/src_train.npz'),
-            'trg_train': os.path.join(base_path, 'processed/trg_train.npz'),
-            'src_val': os.path.join(base_path, 'processed/src_val.npz'),
-            'trg_val': os.path.join(base_path, 'processed/trg_val.npz'),
-            'src_test': os.path.join(base_path, 'processed/src_test.npz'),
-            'trg_test': os.path.join(base_path, 'processed/trg_test.npz')
+            'train': os.path.join(base_path, 'processed/train.npz'),
+            'val': os.path.join(base_path, 'processed/val.npz'),
+            'test': os.path.join(base_path, 'processed/test.npz'),
+            'src_word2index': os.path.join(base_path, 'processed/src_word2index.pickle'),
+            'src_index2word': os.path.join(base_path, 'processed/src_index2word.pickle'),
+            'trg_word2index': os.path.join(base_path, 'processed/trg_word2index.pickle'),
+            'trg_index2word': os.path.join(base_path, 'processed/trg_index2word.pickle'),
+            'word2index': os.path.join(base_path, 'processed/word2index.pickle'),
+            'index2word': os.path.join(base_path, 'processed/index2word.pickle')
         },
         'log': {
             'data_log': os.path.join(base_path, 'log/data_log.yml')
