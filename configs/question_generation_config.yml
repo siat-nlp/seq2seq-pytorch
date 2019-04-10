@@ -1,4 +1,3 @@
-share_src_trg_vocab: True
 data_process:
   base_path: data/question_generation
   src_clip_len: None
@@ -8,6 +7,7 @@ data_process:
     min_freq: 1
 model:
   type: cnn
+  share_src_trg_vocab: True
   rnn:
     embed_size: 512
     rnn_type: LSTM

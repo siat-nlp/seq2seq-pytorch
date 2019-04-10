@@ -14,7 +14,7 @@ def data_process(config):
     src_test_word_lists = get_word_lists(path['raw']['src_test'], config['data_process']['src_clip_len'])
     trg_test_word_lists = get_word_lists(path['raw']['trg_test'], config['data_process']['trg_clip_len'])
 
-    if config['share_src_trg_vocab']:
+    if config['model']['share_src_trg_vocab']:
         vocab = Vocab()
 
         for word_list in src_train_word_lists:

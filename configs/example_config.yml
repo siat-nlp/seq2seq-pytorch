@@ -1,4 +1,3 @@
-share_src_trg_vocab: False
 data_process:
   base_path: data/example
   src_clip_len: 100
@@ -12,6 +11,7 @@ data_process:
       min_freq: 1
 model:
   type: cnn
+  share_src_trg_vocab: False
   rnn:
     embed_size: 512
     rnn_type: LSTM

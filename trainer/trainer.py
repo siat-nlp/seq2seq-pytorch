@@ -6,14 +6,20 @@ from trainer.make_model.make_model import make_model
 from trainer.make_data import make_train_data
 from trainer.sentence_cross_entropy import SentenceCrossEntropy
 from trainer.eval import eval
+from data_process.utils import parse_path
 
 def train(config):
+    path = parse_path(config['data_process']['base_path'])
     model = make_model(config['model']).cuda()
     train_loader, val_loader = make_train_data(config)
-    with open(config['data_process']['path']['processed']['trg_index2word'], 'rb') as handle:
-        trg_index2word = pickle.load(handle)
+    if config['model']['share_src_trg_vocab']:
+        with open(path['processed']['index2word'], 'rb') as handle:
+            trg_index2word = pickle.load(handle)
+    else:
+        with open(path['processed']['trg_index2word'], 'rb') as handle:
+            trg_index2word = pickle.load(handle)
     criterion = SentenceCrossEntropy()
-    config = config['train']
+    config = config['model']
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'])
     for epoch in range(1, config['num_epoches'] + 1):
         sum_loss = 0
