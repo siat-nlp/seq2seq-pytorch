@@ -1,8 +1,8 @@
 share_src_trg_vocab: True
 data_process:
   base_path: data/question_generation
-  src_max_len: 100
-  trg_max_len: 100
+  src_clip_len: None
+  trg_clip_len: None
   vocab:
     max_size: 30000
     min_freq: 1

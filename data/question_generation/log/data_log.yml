@@ -1,8 +1,32 @@
 oov_size: 45567
-test_src_max_len: 139
-test_trg_max_len: 38
-train_src_max_len: 433
-train_trg_max_len: 61
-val_src_max_len: 265
-val_trg_max_len: 36
+src_test:
+  avg_len: 34.465689989054475
+  max_len: 139
+  min_len: 7
+  num: 11877
+src_train:
+  avg_len: 34.85920208841723
+  max_len: 433
+  min_len: 6
+  num: 70484
+src_val:
+  avg_len: 35.870955534531696
+  max_len: 265
+  min_len: 4
+  num: 10570
+trg_test:
+  avg_len: 13.612949397996127
+  max_len: 38
+  min_len: 6
+  num: 11877
+trg_train:
+  avg_len: 13.290973838034164
+  max_len: 61
+  min_len: 4
+  num: 70484
+trg_val:
+  avg_len: 13.42809839167455
+  max_len: 36
+  min_len: 5
+  num: 10570
 vocab_size: 30000

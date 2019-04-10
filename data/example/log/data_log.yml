@@ -1,10 +1,34 @@
 src_oov_size: 0
+src_test:
+  avg_len: 14.234
+  max_len: 37
+  min_len: 7
+  num: 1000
+src_train:
+  avg_len: 14.607413793103449
+  max_len: 47
+  min_len: 4
+  num: 29000
+src_val:
+  avg_len: 14.899408284023668
+  max_len: 39
+  min_len: 5
+  num: 1014
 src_vocab_size: 18560
-test_src_max_len: 37
-test_trg_max_len: 35
-train_src_max_len: 47
-train_trg_max_len: 43
 trg_oov_size: 0
+trg_test:
+  avg_len: 15.058
+  max_len: 35
+  min_len: 7
+  num: 1000
+trg_train:
+  avg_len: 15.110827586206897
+  max_len: 43
+  min_len: 6
+  num: 29000
+trg_val:
+  avg_len: 15.240631163708088
+  max_len: 34
+  min_len: 6
+  num: 1014
 trg_vocab_size: 10842
-val_src_max_len: 39
-val_trg_max_len: 34

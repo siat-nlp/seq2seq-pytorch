@@ -3,16 +3,16 @@ import yaml
 import numpy as np
 import pickle
 from data_process.vocab import Vocab
-from data_process.utils import get_word_lists, word_lists2numpy, parse_path
+from data_process.utils import get_word_lists, word_lists2numpy, parse_path, analyze
 
 def data_process(config):
     path = parse_path(config['data_process']['base_path'])
-    src_train_word_lists = get_word_lists(path['raw']['src_train'])
-    trg_train_word_lists = get_word_lists(path['raw']['trg_train'])
-    src_val_word_lists = get_word_lists(path['raw']['src_val'])
-    trg_val_word_lists = get_word_lists(path['raw']['trg_val'])
-    src_test_word_lists = get_word_lists(path['raw']['src_test'])
-    trg_test_word_lists = get_word_lists(path['raw']['trg_test'])
+    src_train_word_lists = get_word_lists(path['raw']['src_train'], config['data_process']['src_clip_len'])
+    trg_train_word_lists = get_word_lists(path['raw']['trg_train'], config['data_process']['trg_clip_len'])
+    src_val_word_lists = get_word_lists(path['raw']['src_val'], config['data_process']['src_clip_len'])
+    trg_val_word_lists = get_word_lists(path['raw']['trg_val'], config['data_process']['trg_clip_len'])
+    src_test_word_lists = get_word_lists(path['raw']['src_test'], config['data_process']['src_clip_len'])
+    trg_test_word_lists = get_word_lists(path['raw']['trg_test'], config['data_process']['trg_clip_len'])
 
     if config['share_src_trg_vocab']:
         vocab = Vocab()
@@ -45,12 +45,12 @@ def data_process(config):
         data_log = {
             'vocab_size': len(index2word),
             'oov_size': len(word2index) - len(index2word),
-            'train_src_max_len': src_train.shape[1],
-            'train_trg_max_len': trg_train.shape[1],
-            'val_src_max_len': src_val.shape[1],
-            'val_trg_max_len': trg_val.shape[1],
-            'test_src_max_len': src_test.shape[1],
-            'test_trg_max_len': trg_test.shape[1]
+            'src_train': analyze(src_train_word_lists),
+            'trg_train': analyze(trg_train_word_lists),
+            'src_val': analyze(src_val_word_lists),
+            'trg_val': analyze(trg_val_word_lists),
+            'src_test': analyze(src_test_word_lists),
+            'trg_test': analyze(trg_test_word_lists)
         }
         if not os.path.exists(os.path.dirname(path['log']['data_log'])):
             os.makedirs(os.path.dirname(path['log']['data_log']))
@@ -101,12 +101,12 @@ def data_process(config):
             'src_oov_size': len(src_word2index) - len(src_index2word),
             'trg_vocab_size': len(trg_index2word),
             'trg_oov_size': len(trg_word2index) - len(trg_index2word),
-            'train_src_max_len': src_train.shape[1],
-            'train_trg_max_len': trg_train.shape[1],
-            'val_src_max_len': src_val.shape[1],
-            'val_trg_max_len': trg_val.shape[1],
-            'test_src_max_len': src_test.shape[1],
-            'test_trg_max_len': trg_test.shape[1]
+            'src_train': analyze(src_train_word_lists),
+            'trg_train': analyze(trg_train_word_lists),
+            'src_val': analyze(src_val_word_lists),
+            'trg_val': analyze(trg_val_word_lists),
+            'src_test': analyze(src_test_word_lists),
+            'trg_test': analyze(trg_test_word_lists)
         }
         if not os.path.exists(os.path.dirname(path['log']['data_log'])):
             os.makedirs(os.path.dirname(path['log']['data_log']))

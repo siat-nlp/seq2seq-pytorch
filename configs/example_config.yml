@@ -1,8 +1,8 @@
 share_src_trg_vocab: False
 data_process:
   base_path: data/example
-  src_max_len: 100
-  trg_max_len: 100
+  src_clip_len: 100
+  trg_clip_len: 100
   vocab:
     src:
       max_size: 30000
