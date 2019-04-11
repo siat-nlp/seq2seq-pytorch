@@ -34,8 +34,8 @@ def train(config):
             sum_loss += loss.item() * src.size(0)
             sum_examples += src.size(0)
             s_loss += loss.item()
-            if i > 0 and i % 10 == 0:
-                s_loss /= 10
+            if i > 0 and i % 100 == 0:
+                s_loss /= 100
                 print('[epoch %2d] [step %4d] [loss %.4f]' % (epoch, i, s_loss))
                 s_loss = 0
             loss.backward()

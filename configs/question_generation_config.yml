@@ -3,24 +3,25 @@ data_process:
   src_clip_len: None
   trg_clip_len: None
   vocab:
-    max_size: 30000
-    min_freq: 1
+    max_size: 40000
+    min_freq: 4
 model:
   type: cnn
   share_src_trg_vocab: True
   rnn:
-    embed_size: 512
+    embed_size: 300
     rnn_type: LSTM
     hidden_size: 512
     num_layers: 2
     bidirectional: True
-    dropout: 0.1
+    dropout: 0.3
     share_decoder_embedding: True
-    gpu: 3
+    gpu: 4
     batch_size: 64
     learning_rate: 0.001
     num_epoches: 300
     clip: 5.0
+    max_len: 36
     label_smoothing: 0.1
   cnn:
     embed_size: 256
@@ -31,12 +32,12 @@ model:
     activate: glu
     dropout: 0.1
     share_decoder_embedding: True
-    gpu: 3
+    gpu: 0
     batch_size: 64
     learning_rate: 0.001
     num_epoches: 300
     clip: 5.0
-    max_len: 64
+    max_len: 36
     label_smoothing: 0.1
   transformer:
     num_positions: 500
@@ -45,9 +46,10 @@ model:
     num_layers: 6
     dropout: 0.1
     share_decoder_embedding: True
-    gpu: 3
-    batch_size: 64
+    gpu: 0
+    batch_size: 32
     learning_rate: 0.001
     num_epoches: 300
     clip: 5.0
+    max_len: 36
     label_smoothing: 0.1

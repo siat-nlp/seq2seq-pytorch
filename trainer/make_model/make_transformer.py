@@ -20,7 +20,7 @@ def make_transformer(config):
     if share_src_trg_vocab:
         src_embedding = nn.Embedding(
             num_embeddings=data_log['vocab_size'],
-            embedding_dim=config['embed_size']
+            embedding_dim=config['d_model']
         )
         trg_embedding = src_embedding
     else:

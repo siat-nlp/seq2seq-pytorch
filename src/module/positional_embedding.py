@@ -6,6 +6,10 @@ import math
 from src.module.utils.constants import PAD_INDEX
 
 class PositionalEmbedding(nn.Module):
+    """
+    PositionEmbedding:
+    if learnable == False, the embedding will be computed as <<Attention Is All You Need>>
+    """
 
     def __init__(self, num_embeddings, embedding_dim, learnable=False):
         super(PositionalEmbedding, self).__init__()
@@ -27,7 +31,9 @@ class PositionalEmbedding(nn.Module):
 
     def forward(self, x, left_padding=0):
         """
-        x: LongTensor (batch_size, time_step)
+        :param x: LongTensor (batch_size, time_step)
+        :param left_padding: int
+        :return embedded x: FloatTensor (batch_size, left_padding + time_step, embedding_dim)
         """
         x = x[:, left_padding:]
         x = self._get_embedding(x)

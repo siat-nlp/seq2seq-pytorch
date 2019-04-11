@@ -2,6 +2,9 @@ from torch import nn
 import torch.nn.functional as F
 
 class ConvGLU(nn.Module):
+    """
+    1-d convolutional layer using GLU activation.
+    """
 
     def __init__(self, input_size, output_size, kernel_size, encode=True):
         super(ConvGLU, self).__init__()
@@ -16,7 +19,8 @@ class ConvGLU(nn.Module):
 
     def forward(self, x):
         """
-        x: FloatTensor (batch_size, time_step, hidden_size)
+        :param x: FloatTensor (batch_size, time_step, input_size)
+        :return: FloatTensor (batch_size, time_step, output_size)
         """
         x = x.transpose(1, 2)
         x = F.pad(x, [self.left_padding, self.right_padding, 0, 0, 0, 0])

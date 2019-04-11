@@ -1,6 +1,9 @@
 from torch import nn
 
 class Decoder(nn.Module):
+    """
+    The base class for all decoders.
+    """
 
     def __init__(self):
         super(Decoder, self).__init__()
