@@ -28,7 +28,7 @@ class ConvDecoder(Decoder):
         src, embed_src, src_mask = src
         return self.step(src, embed_src, src_mask, trg)
 
-    def greedy_decode(self, src, max_len):
+    def decode(self, src, max_len):
         src, embed_src, src_mask = src
         batch_size = src.size(0)
         trg = torch.zeros(batch_size, 1).fill_(SOS_INDEX).long().cuda()
@@ -39,9 +39,6 @@ class ConvDecoder(Decoder):
             logit.append(step_logit.squeeze(1))
         logit = torch.stack(logit, dim=1)
         return logit
-
-    def beam_decode(self, src, max_len, beam_size):
-        pass
 
     def step(self, src, embed_src, src_mask, trg):
         trg_embedding = self.embedding(trg) + self.positional_embedding(trg)

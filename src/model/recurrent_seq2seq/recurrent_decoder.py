@@ -78,7 +78,7 @@ class RecurrentDecoder(Decoder):
         init_output = self.output_projection(torch.cat([init_top_hidden, src_mean], dim=1))
         return init_output
 
-    def greedy_decode(self, src, max_len):
+    def decode(self, src, max_len):
         src, src_mask, initial_states = src
         states = initial_states
         output = self.get_init_output(src, src_mask, initial_states)
@@ -92,6 +92,3 @@ class RecurrentDecoder(Decoder):
             logit.append(step_logit)
         logit = torch.stack(logit, dim=1)
         return logit
-
-    def beam_decode(self, src, max_len, beam_size):
-        pass

@@ -10,7 +10,7 @@ def eval(data_loader, model, max_len, criterion, index2word):
         src, trg = data
         src, trg = src.cuda(), trg.cuda()
         with torch.no_grad():
-            logit = model.greedy_decode(src, max_len)
+            logit = model.decode(src, max_len)
         time_step = trg.size(1)
         logit = logit[:, 0:time_step]
         batch_size = src.size(0)

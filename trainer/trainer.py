@@ -18,8 +18,8 @@ def train(config):
     else:
         with open(path['processed']['trg_index2word'], 'rb') as handle:
             trg_index2word = pickle.load(handle)
-    criterion = SentenceCrossEntropy()
     config = config['model'][config['model']['type']]
+    criterion = SentenceCrossEntropy(label_smoothing=config['label_smoothing'])
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'])
     for epoch in range(1, config['num_epoches'] + 1):
         sum_loss = 0

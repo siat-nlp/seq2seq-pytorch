@@ -38,7 +38,7 @@ class TransformerDecoder(Decoder):
         logit = self.generator(trg)
         return logit
 
-    def greedy_decode(self, src, max_len):
+    def decode(self, src, max_len):
         src, src_mask = src
         batch_size = src.size(0)
         trg = torch.zeros(batch_size, 1).fill_(SOS_INDEX).long().cuda()
@@ -50,9 +50,6 @@ class TransformerDecoder(Decoder):
             logit.append(step_logit.squeeze(1))
         logit = torch.stack(logit, dim=1)
         return logit
-
-    def beam_decode(self, src, max_len, beam_size):
-        pass
 
     def get_mask(self, trg):
         """

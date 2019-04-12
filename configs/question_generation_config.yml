@@ -28,11 +28,11 @@ model:
     num_positions: 500
     hidden_size: 512
     kernel_size: 3
-    num_layers: 8
+    num_layers: 6
     activate: glu
     dropout: 0.1
     share_decoder_embedding: True
-    gpu: 0
+    gpu: 4
     batch_size: 64
     learning_rate: 0.001
     num_epoches: 300
@@ -43,10 +43,10 @@ model:
     num_positions: 500
     d_model: 512
     num_heads: 8
-    num_layers: 6
-    dropout: 0.1
+    num_layers: 3
+    dropout: 0.3
     share_decoder_embedding: True
-    gpu: 0
+    gpu: 4
     batch_size: 32
     learning_rate: 0.001
     num_epoches: 300

@@ -11,8 +11,5 @@ class Decoder(nn.Module):
     def forward(self, src, trg):
         raise NotImplementedError('Decoder forward method is not implemented.')
 
-    def greedy_decode(self, src, max_len):
+    def decode(self, src, max_len):
         raise NotImplementedError('Decoder greedy_decode method is not implemented.')
-
-    def beam_decode(self, src, max_len, beam_size):
-        raise NotImplementedError('Decoder beam_decode method is not implemented.')
